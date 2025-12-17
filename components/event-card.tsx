@@ -12,6 +12,8 @@ interface EventCardProps {
   image: string
   attendees?: number
   category?: string
+  buttonText?: string
+  buttonLink?: string
 }
 
 export function EventCard({
@@ -23,11 +25,13 @@ export function EventCard({
   image,
   attendees,
   category = "Event",
+  buttonText = "Learn More",
+  buttonLink = "#",
 }: EventCardProps) {
   return (
-    <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50">
+    <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50 h-full flex flex-col">
       {/* Image Container */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden shrink-0">
         <Image
           src={image || "/placeholder.svg"}
           alt={title}
@@ -45,7 +49,7 @@ export function EventCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <CardContent className="p-6">
+      <CardContent className="p-6 flex flex-col flex-grow">
         {/* Event Details */}
         <div className="space-y-3 mb-4">
           <div className="flex items-center text-sm text-muted-foreground">
@@ -70,14 +74,19 @@ export function EventCard({
         <h3 className="text-xl font-bold mb-3 text-balance group-hover:text-primary transition-colors duration-300">
           {title}
         </h3>
-        <p className="text-muted-foreground text-pretty mb-6 line-clamp-3">{description}</p>
+        <p className="text-muted-foreground text-pretty mb-6 line-clamp-3 bg-red-50/0 flex-grow">
+          {description}
+        </p>
 
         {/* Action Button */}
         <Button
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-semibold transition-all duration-300 group-hover:shadow-lg"
+          asChild
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-semibold transition-all duration-300 group-hover:shadow-lg mt-auto"
           size="lg"
         >
-          Learn More
+          <a href={buttonLink} target={buttonLink.startsWith('http') ? '_blank' : undefined} rel={buttonLink.startsWith('http') ? 'noopener noreferrer' : undefined}>
+            {buttonText}
+          </a>
         </Button>
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAdminDb } from '@/lib/firebase-admin';
 
 export async function GET() {
   try {
@@ -7,16 +8,15 @@ export async function GET() {
       process.env.FIREBASE_CLIENT_EMAIL &&
       process.env.FIREBASE_PRIVATE_KEY
     );
-    
+
     if (!hasCreds) {
       console.warn('Missing Firebase Admin credentials, returning empty data');
       return NextResponse.json({});
     }
 
-    // Only import admin DB after checking credentials
-    const { adminDb } = await import('@/lib/firebase-admin');
-    
-    const docRef = adminDb.collection('pages').doc('events');
+    const db = await getAdminDb();
+
+    const docRef = db.collection('pages').doc('events');
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
@@ -29,4 +29,3 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to load', detail: String(error?.message || error) }, { status: 500 });
   }
 }
-

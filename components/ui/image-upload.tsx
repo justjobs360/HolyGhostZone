@@ -4,8 +4,8 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Upload, Link as LinkIcon, X, Loader2 } from 'lucide-react';
-import { storage } from '@/lib/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// import { storage } from '@/lib/firebase';
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface ImageUploadProps {
   value: string;
@@ -15,9 +15,9 @@ interface ImageUploadProps {
   previewClassName?: string;
 }
 
-export function ImageUpload({ 
-  value, 
-  onChange, 
+export function ImageUpload({
+  value,
+  onChange,
   placeholder = "/images/example.jpg",
   className = "",
   previewClassName = "w-full h-40 object-cover"
@@ -45,19 +45,23 @@ export function ImageUpload({
 
     setIsUploading(true);
     try {
-      // Create a unique filename
-      const timestamp = Date.now();
-      const fileName = `images/${timestamp}-${file.name}`;
-      const storageRef = ref(storage, fileName);
+      const formData = new FormData();
+      formData.append('file', file);
 
-      // Upload file
-      const snapshot = await uploadBytes(storageRef, file);
-      
-      // Get download URL
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      
-      onChange(downloadURL);
-      setUrlInput(downloadURL);
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Upload failed');
+      }
+
+      const data = await response.json();
+
+      onChange(data.url);
+      setUrlInput(data.url);
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Error uploading file. Please try again.');

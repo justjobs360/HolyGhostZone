@@ -66,7 +66,7 @@ export default function EventsPage() {
 
   const loadPageData = async () => {
     try {
-      const response = await fetch('/api/pages/events');
+      const response = await fetch('/api/pages/events', { cache: 'no-store' });
       if (!response.ok) {
         console.error('Failed to load page data');
         return;
@@ -95,16 +95,16 @@ export default function EventsPage() {
         {/* Hero Section */}
         <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
           {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
               backgroundImage: `url('${pageData.hero.backgroundImage}')`
             }}
           />
-          
+
           {/* Very Dark Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-gray-900/80 to-black/90" />
-          
+
           <div className="container mx-auto px-6 lg:px-8 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="font-bold text-balance mb-8 leading-[0.9] tracking-tight text-white text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
@@ -137,13 +137,13 @@ export default function EventsPage() {
         {/* Philosophical Reflection */}
         <section className="relative py-24 lg:py-48 overflow-hidden">
           {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
               backgroundImage: `url('${pageData.reflection.backgroundImage}')`
             }}
           />
-          
+
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-gray-900/60 to-black/80" />
 

@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminDb } from '@/lib/firebase-admin';
 
 export async function GET() {
   try {
@@ -6,34 +7,40 @@ export async function GET() {
       process.env.FIREBASE_PROJECT_ID &&
       process.env.FIREBASE_CLIENT_EMAIL &&
       process.env.FIREBASE_PRIVATE_KEY
-    )
+    );
+
     if (!hasCreds) {
-      return new NextResponse(JSON.stringify({}), {
+      return NextResponse.json({}, {
         status: 200,
-        headers: { 'content-type': 'application/json', 'x-warning': 'Missing Firebase Admin credentials' },
-      })
+        headers: { 'x-warning': 'Missing Firebase Admin credentials' },
+      });
     }
-    
-    // Only import admin DB after checking credentials
-    const { adminDb } = await import('@/lib/firebase-admin')
-    
+
+    const db = await getAdminDb();
+
     try {
-      const snap = await adminDb.collection('pages').doc('events').get()
+      const snap = await db.collection('pages').doc('events').get();
+
       if (!snap.exists) {
-        return NextResponse.json({}, { status: 200 })
+        return NextResponse.json({}, { status: 200 });
       }
-      return NextResponse.json(snap.data() || {}, { status: 200 })
+
+      return NextResponse.json(snap.data() || {}, { status: 200 });
     } catch (dbError: any) {
-      console.error('Firestore query error:', dbError)
-      // Return empty data if document doesn't exist or collection doesn't exist
-      if (dbError.code === 5) { // NOT_FOUND
-        return NextResponse.json({}, { status: 200 })
+      console.error('Firestore query error:', dbError);
+
+      if (dbError.code === 5) {
+        return NextResponse.json({}, { status: 200 });
       }
-      throw dbError
+
+      throw dbError;
     }
   } catch (e: any) {
-    console.error('GET /api/admin/pages/events error:', e)
-    return NextResponse.json({ error: 'Failed to load', detail: String(e?.message || e) }, { status: 500 })
+    console.error('GET /api/admin/pages/events error:', e);
+    return NextResponse.json(
+      { error: 'Failed to load', detail: String(e?.message || e) },
+      { status: 500 }
+    );
   }
 }
 
@@ -43,20 +50,26 @@ export async function POST(req: NextRequest) {
       process.env.FIREBASE_PROJECT_ID &&
       process.env.FIREBASE_CLIENT_EMAIL &&
       process.env.FIREBASE_PRIVATE_KEY
-    )
+    );
+
     if (!hasCreds) {
-      return NextResponse.json({ error: 'Missing Firebase Admin credentials' }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Missing Firebase Admin credentials' },
+        { status: 500 }
+      );
     }
-    
-    // Only import admin DB after checking credentials
-    const { adminDb } = await import('@/lib/firebase-admin')
-    
-    const body = await req.json()
-    await adminDb.collection('pages').doc('events').set(body, { merge: true })
-    return NextResponse.json({ ok: true }, { status: 200 })
+
+    const db = await getAdminDb();
+
+    const body = await req.json();
+    await db.collection('pages').doc('events').set(body, { merge: true });
+
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (e: any) {
-    console.error('POST /api/admin/pages/events error:', e)
-    return NextResponse.json({ error: 'Failed to save', detail: String(e?.message || e) }, { status: 500 })
+    console.error('POST /api/admin/pages/events error:', e);
+    return NextResponse.json(
+      { error: 'Failed to save', detail: String(e?.message || e) },
+      { status: 500 }
+    );
   }
 }
-

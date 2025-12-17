@@ -24,8 +24,10 @@ export default function EventsPageEditor() {
     attendees: '',
     image: '/images/fillerevents.jpg',
     description: '',
+    buttonText: 'Learn More',
+    buttonLink: '#',
   });
-  
+
   // All sections state
   const [pageData, setPageData] = useState({
     hero: {
@@ -111,7 +113,7 @@ export default function EventsPageEditor() {
         })
       });
       if (!res.ok) throw new Error('Failed to save');
-      
+
       alert('Changes saved successfully! Refresh the events page to see your changes.');
     } catch (error) {
       console.error('Error saving data:', error);
@@ -212,7 +214,7 @@ export default function EventsPageEditor() {
                   </label>
                   <Input
                     value={pageData.hero.title}
-                    onChange={(e) => setPageData({ ...pageData, hero: { ...pageData.hero, title: e.target.value }})}
+                    onChange={(e) => setPageData({ ...pageData, hero: { ...pageData.hero, title: e.target.value } })}
                     placeholder="Enter main title"
                     className="w-full"
                   />
@@ -224,7 +226,7 @@ export default function EventsPageEditor() {
                   </label>
                   <Textarea
                     value={pageData.hero.subtitle}
-                    onChange={(e) => setPageData({ ...pageData, hero: { ...pageData.hero, subtitle: e.target.value }})}
+                    onChange={(e) => setPageData({ ...pageData, hero: { ...pageData.hero, subtitle: e.target.value } })}
                     placeholder="Enter subtitle"
                     rows={3}
                     className="w-full"
@@ -238,7 +240,7 @@ export default function EventsPageEditor() {
                   </label>
                   <ImageUpload
                     value={pageData.hero.backgroundImage}
-                    onChange={(url) => setPageData({ ...pageData, hero: { ...pageData.hero, backgroundImage: url }})}
+                    onChange={(url) => setPageData({ ...pageData, hero: { ...pageData.hero, backgroundImage: url } })}
                     placeholder="/images/services.jpg"
                   />
                 </div>
@@ -286,11 +288,11 @@ export default function EventsPageEditor() {
                 <div className="border-t border-gray-200 pt-6">
                   <div className="flex items-center gap-2 mb-4">
                     <button
-                      className={`px-3 py-1.5 text-sm border ${eventsTab==='list' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300'}`}
+                      className={`px-3 py-1.5 text-sm border ${eventsTab === 'list' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300'}`}
                       onClick={() => setEventsTab('list')}
                     >Events List</button>
                     <button
-                      className={`px-3 py-1.5 text-sm border ${eventsTab==='add' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300'}`}
+                      className={`px-3 py-1.5 text-sm border ${eventsTab === 'add' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-300'}`}
                       onClick={() => setEventsTab('add')}
                     >Add New Event</button>
                   </div>
@@ -375,6 +377,30 @@ export default function EventsPageEditor() {
                                 placeholder="e.g., 350"
                               />
                             </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                              <Input
+                                value={(ev as any).buttonText || 'Learn More'}
+                                onChange={(e) => {
+                                  const list = [...pageData.specialEvents]
+                                  list[index] = { ...ev, buttonText: e.target.value } as any
+                                  setPageData({ ...pageData, specialEvents: list })
+                                }}
+                                placeholder="e.g. Join Zoom"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Button Link</label>
+                              <Input
+                                value={(ev as any).buttonLink || '#'}
+                                onChange={(e) => {
+                                  const list = [...pageData.specialEvents]
+                                  list[index] = { ...ev, buttonLink: e.target.value } as any
+                                  setPageData({ ...pageData, specialEvents: list })
+                                }}
+                                placeholder="https://..."
+                              />
+                            </div>
                             <div className="md:col-span-2">
                               <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                               <Textarea
@@ -428,37 +454,37 @@ export default function EventsPageEditor() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                          <Input value={newEvent.title} onChange={(e)=>setNewEvent({...newEvent,title:e.target.value})} placeholder="Event title" />
+                          <Input value={newEvent.title} onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })} placeholder="Event title" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                          <Input value={newEvent.date} onChange={(e)=>setNewEvent({...newEvent,date:e.target.value})} placeholder="March 31, 2024" />
+                          <Input value={newEvent.date} onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })} placeholder="March 31, 2024" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                          <Input value={newEvent.time} onChange={(e)=>setNewEvent({...newEvent,time:e.target.value})} placeholder="9:00 AM & 11:00 AM" />
+                          <Input value={newEvent.time} onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })} placeholder="9:00 AM & 11:00 AM" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                          <Input value={newEvent.location} onChange={(e)=>setNewEvent({...newEvent,location:e.target.value})} placeholder="Venue details" />
+                          <Input value={newEvent.location} onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })} placeholder="Venue details" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                          <Input value={newEvent.category} onChange={(e)=>setNewEvent({...newEvent,category:e.target.value})} placeholder="Worship" />
+                          <Input value={newEvent.category} onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })} placeholder="Worship" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Attendees</label>
-                          <Input value={newEvent.attendees} onChange={(e)=>setNewEvent({...newEvent,attendees:e.target.value})} placeholder="350" />
+                          <Input value={newEvent.attendees} onChange={(e) => setNewEvent({ ...newEvent, attendees: e.target.value })} placeholder="350" />
                         </div>
                         <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                          <Textarea value={newEvent.description} onChange={(e)=>setNewEvent({...newEvent,description:e.target.value})} rows={2} placeholder="Short description" />
+                          <Textarea value={newEvent.description} onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })} rows={2} placeholder="Short description" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2"><ImageIcon className="w-4 h-4 inline mr-2" />Image</label>
                           <ImageUpload
                             value={newEvent.image}
-                            onChange={(url)=>setNewEvent({...newEvent,image:url})}
+                            onChange={(url) => setNewEvent({ ...newEvent, image: url })}
                             placeholder="/images/fillerevents.jpg"
                             previewClassName="w-full h-32 object-cover"
                           />
@@ -466,14 +492,14 @@ export default function EventsPageEditor() {
                       </div>
                       <div className="flex gap-2">
                         <Button
-                          onClick={()=>{
+                          onClick={() => {
                             const list = [...pageData.specialEvents, { ...newEvent, id: Date.now() }]
-                            setPageData({...pageData, specialEvents: list})
-                            setNewEvent({ id: 0, title:'', date:'', time:'', location:'', category:'', attendees:'', image:'/images/fillerevents.jpg', description:'' })
+                            setPageData({ ...pageData, specialEvents: list })
+                            setNewEvent({ id: 0, title: '', date: '', time: '', location: '', category: '', attendees: '', image: '/images/fillerevents.jpg', description: '', buttonText: 'Learn More', buttonLink: '#' })
                             setEventsTab('list')
                           }}
                         >Save Event</Button>
-                        <Button variant="outline" onClick={()=>setEventsTab('list')}>Cancel</Button>
+                        <Button variant="outline" onClick={() => setEventsTab('list')}>Cancel</Button>
                       </div>
                     </div>
                   )}
@@ -500,7 +526,7 @@ export default function EventsPageEditor() {
                   </label>
                   <Input
                     value={pageData.reflection.title}
-                    onChange={(e) => setPageData({ ...pageData, reflection: { ...pageData.reflection, title: e.target.value }})}
+                    onChange={(e) => setPageData({ ...pageData, reflection: { ...pageData.reflection, title: e.target.value } })}
                     placeholder="Enter reflection title"
                     className="w-full"
                   />
@@ -513,7 +539,7 @@ export default function EventsPageEditor() {
                   </label>
                   <ImageUpload
                     value={pageData.reflection.backgroundImage}
-                    onChange={(url) => setPageData({ ...pageData, reflection: { ...pageData.reflection, backgroundImage: url }})}
+                    onChange={(url) => setPageData({ ...pageData, reflection: { ...pageData.reflection, backgroundImage: url } })}
                     placeholder="/images/carousel.jpg"
                   />
                 </div>

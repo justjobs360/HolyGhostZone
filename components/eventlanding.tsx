@@ -36,8 +36,8 @@ export function EventLanding() {
     location: string;
     description: string;
     image: string;
-    isZoom?: boolean;
-    zoomLink?: string;
+    buttonText?: string;
+    buttonLink?: string;
   }> | null>(null)
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function EventLanding() {
 
     // Set initial width
     handleResize()
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -58,7 +58,7 @@ export function EventLanding() {
         // Fetch events data from the events page API
         const eventsResponse = await fetch('/api/pages/events');
         const homeResponse = await fetch('/api/pages/home');
-        
+
         if (eventsResponse.ok) {
           const eventsData = await eventsResponse.json();
           if (Array.isArray(eventsData.specialEvents)) {
@@ -70,13 +70,13 @@ export function EventLanding() {
               location: event.location,
               description: event.description,
               image: event.image,
-              isZoom: false, // Events page doesn't have Zoom info, so default to false
-              zoomLink: event.zoomLink || undefined
+              buttonText: event.buttonText || 'Learn More',
+              buttonLink: event.buttonLink || '#'
             }));
             setEventsList(convertedEvents);
           }
         }
-        
+
         if (homeResponse.ok) {
           const homeData = await homeResponse.json();
           if (homeData.events) {
@@ -107,7 +107,8 @@ export function EventLanding() {
       location: "Delta Hotels Milton Keynes",
       description: "Join us for our main worship services. We gather to worship together, learn from Scripture, pray for one another, and create space to hear from the Spirit.",
       image: "/images/events.jpeg",
-      isZoom: false
+      buttonText: "Join Us",
+      buttonLink: "#"
     },
     {
       title: "Tuesday House Fellowship & Bible Study",
@@ -116,8 +117,8 @@ export function EventLanding() {
       location: "Meeting ID: 858 914 272 | Passcode: 141507",
       description: "Mid-week house fellowship and Bible study sessions where we dive deeper into God's Word. Interactive study sessions with small group discussions.",
       image: "/images/events.jpeg",
-      isZoom: true,
-      zoomLink: "https://zoom.us/j/858914272#success"
+      buttonText: "Join on Zoom",
+      buttonLink: "https://zoom.us/j/858914272#success"
     },
     {
       title: "Thursday Shiloh Hour",
@@ -126,8 +127,8 @@ export function EventLanding() {
       location: "Meeting ID: 858 914 272 | Passcode: 141507",
       description: "Join us online for the Shiloh Hour - a powerful time of prayer, worship, and encountering God's presence.",
       image: "/images/events.jpeg",
-      isZoom: true,
-      zoomLink: "https://zoom.us/j/858914272#success"
+      buttonText: "Join on Zoom",
+      buttonLink: "https://zoom.us/j/858914272#success"
     },
     {
       title: "Community Outreach",
@@ -136,7 +137,8 @@ export function EventLanding() {
       location: "Local Community",
       description: "Community outreach programs and seasonal celebrations. Transformational Christ-centered activities that impact our local community.",
       image: "/images/temp.webp",
-      isZoom: false
+      buttonText: "Learn More",
+      buttonLink: "#"
     }
   ]
 
@@ -177,7 +179,7 @@ export function EventLanding() {
   return (
     <section className="relative pt-4 pb-8 bg-gray-900 overflow-hidden">
       {/* Blurred Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url('/images/carousel.jpg')`,
@@ -185,7 +187,7 @@ export function EventLanding() {
           transform: 'scale(1.1)'
         }}
       />
-      
+
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-gray-900/80" />
 
@@ -217,46 +219,37 @@ export function EventLanding() {
                 <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300 p-0 flex flex-col h-full">
                   <CardContent className="p-4 flex flex-col flex-grow">
                     {/* Event Image - Clickable for Zoom events */}
-                    {event.isZoom ? (
-                      <a 
-                        href={event.zoomLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="block aspect-[4/3] rounded-lg overflow-hidden mb-3 cursor-pointer"
-                      >
-                        <img 
-                          src={event.image}
-                          alt={event.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </a>
-                    ) : (
-                      <div className="aspect-[4/3] rounded-lg overflow-hidden mb-3">
-                        <img 
-                          src={event.image}
-                          alt={event.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
+                    {/* Event Image - Clickable */}
+                    <a
+                      href={event.buttonLink}
+                      target={event.buttonLink?.startsWith('http') ? '_blank' : undefined}
+                      rel={event.buttonLink?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className="block aspect-[4/3] rounded-lg overflow-hidden mb-3 cursor-pointer"
+                    >
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </a>
 
                     {/* Event Details */}
                     <div className="text-white flex flex-col flex-grow">
                       <h3 className="text-base md:text-lg font-bold mb-2 line-clamp-2">
                         {event.title}
                       </h3>
-                      
+
                       <div className="space-y-1.5 mb-3">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-3 h-3 text-primary flex-shrink-0" />
                           <span className="text-gray-300 text-xs">{event.date}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Clock className="w-3 h-3 text-primary flex-shrink-0" />
                           <span className="text-gray-300 text-xs">{event.time}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <MapPin className="w-3 h-3 text-primary flex-shrink-0" />
                           <span className="text-gray-300 text-xs line-clamp-1">{event.location}</span>
@@ -268,22 +261,16 @@ export function EventLanding() {
                       </p>
 
                       <div className="flex justify-center mt-auto">
-                        {event.isZoom ? (
-                          <a 
-                            href={event.zoomLink} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="w-full sm:w-auto"
-                          >
-                            <button className="w-full sm:w-auto border-2 border-primary bg-primary hover:bg-primary/90 text-white px-6 md:px-8 py-3 text-xs md:text-sm font-medium uppercase tracking-wide transition-all duration-300">
-                              Join on Zoom
-                            </button>
-                          </a>
-                        ) : (
+                        <a
+                          href={event.buttonLink}
+                          target={event.buttonLink?.startsWith('http') ? '_blank' : undefined}
+                          rel={event.buttonLink?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          className="w-full sm:w-auto"
+                        >
                           <button className="w-full sm:w-auto border-2 border-primary bg-primary hover:bg-primary/90 text-white px-6 md:px-8 py-3 text-xs md:text-sm font-medium uppercase tracking-wide transition-all duration-300">
-                            Learn More
+                            {event.buttonText}
                           </button>
-                        )}
+                        </a>
                       </div>
                     </div>
                   </CardContent>
@@ -306,11 +293,10 @@ export function EventLanding() {
               <button
                 key={index}
                 onClick={() => setCurrentEvent(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentEvent 
-                    ? 'bg-primary scale-125' 
-                    : 'bg-white/30 hover:bg-white/50'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentEvent
+                  ? 'bg-primary scale-125'
+                  : 'bg-white/30 hover:bg-white/50'
+                  }`}
               />
             ))}
           </div>
