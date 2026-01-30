@@ -130,7 +130,6 @@ export function TeachingCard({
   return (
     <>
       <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50">
-    <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50">
       {/* Video Thumbnail Container */}
       <div className="relative overflow-hidden">
         <Image
