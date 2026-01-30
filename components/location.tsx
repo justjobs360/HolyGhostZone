@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Clock, Phone, Mail } from "lucide-react"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 
 interface FindUsData {
   address: string;
   mapUrl: string;
   phone: string;
   email: string;
+  logo?: string;
 }
 
 export function Location() {
@@ -44,6 +46,17 @@ export function Location() {
     <section className="py-12 md:py-16 lg:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 md:mb-12 lg:mb-16">
+          {findUsData.logo && (
+            <div className="flex justify-center mb-6">
+              <Image
+                src={findUsData.logo}
+                alt="Location Logo"
+                width={200}
+                height={100}
+                className="h-20 md:h-24 lg:h-28 w-auto object-contain"
+              />
+            </div>
+          )}
           <h2 className="font-bold text-gray-900 mb-4 md:mb-6" style={{ fontSize: 'clamp(2rem, 5.5vw, 4rem)' }}>
             Find Us
           </h2>
