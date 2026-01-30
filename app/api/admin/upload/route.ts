@@ -11,12 +11,18 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
         }
 
-        if (!file.type.startsWith('image/')) {
-            return NextResponse.json({ error: 'File must be an image' }, { status: 400 });
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+        const isAudio = file.type.startsWith('audio/');
+
+        if (!isImage && !isVideo && !isAudio) {
+            return NextResponse.json({ error: 'File must be an image, video, or audio file' }, { status: 400 });
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 });
+        // Increase size limit for video/audio files
+        const maxSize = isImage ? 5 * 1024 * 1024 : 100 * 1024 * 1024; // 5MB for images, 100MB for video/audio
+        if (file.size > maxSize) {
+            return NextResponse.json({ error: `File size must be less than ${maxSize / (1024 * 1024)}MB` }, { status: 400 });
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());

@@ -256,7 +256,7 @@ export function EventLanding() {
                         </div>
                       </div>
 
-                      <p className="text-gray-300 mb-3 leading-relaxed text-xs line-clamp-2">
+                      <p className="text-gray-300 mb-3 leading-relaxed text-xs line-clamp-2 whitespace-pre-line">
                         {event.description}
                       </p>
 

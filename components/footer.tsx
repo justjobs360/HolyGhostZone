@@ -1,10 +1,65 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube, Twitter, Heart } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const [footerData, setFooterData] = useState({
+    logo: '/images/holy-ghost-zone-logo.png',
+    description: 'We are a community based church with a keen interest in impacting our community through transformational Christ-centered activities and programs.',
+    socialMedia: {
+      facebook: '',
+      instagram: '',
+      youtube: '',
+      twitter: '',
+    },
+    quickLinks: [
+      { label: 'Home', href: '/' },
+      { label: 'About Us', href: '/about' },
+      { label: 'Services', href: '#events' },
+      { label: 'Teachings', href: '#teachings' },
+    ],
+    serviceTimes: [
+      { title: 'Sunday Worship', time: '11:00 AM' },
+      { title: 'Tuesday House Fellowship & Bible Study', time: '7:30 PM (Zoom)' },
+      { title: 'Thursday Shiloh Hour', time: '7:00 PM (Zoom)' },
+    ],
+    contactInfo: {
+      address: 'Delta Hotels Milton Keynes\nTimbold Drive, Kents Hill\nMilton Keynes, MK7 6HL\nUnited Kingdom',
+      phone: '+44 7445 423178',
+      email: 'info@holyghostzonemk.org',
+    },
+    copyright: 'Holy Ghost Zone MK. All rights reserved.',
+    developerCredit: {
+      text: 'Developed by',
+      link: 'https://www.sillylittletools.com',
+      linkText: 'SillyLittleTools',
+    },
+  })
+
+  useEffect(() => {
+    const loadFooterData = async () => {
+      try {
+        const response = await fetch('/api/pages/footer');
+        if (!response.ok) {
+          console.error('Failed to load footer data');
+          return;
+        }
+        const data = await response.json();
+        if (Object.keys(data).length > 0) {
+          setFooterData(data);
+        }
+      } catch (error) {
+        console.error('Error loading footer data:', error);
+      }
+    };
+
+    loadFooterData();
+  }, []);
 
   return (
     <footer className="bg-slate-900 text-white">
@@ -15,7 +70,7 @@ export function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center mb-4 md:mb-6">
               <Image
-                src="/images/holy-ghost-zone-logo.png"
+                src={footerData.logo}
                 alt="Holy Ghost Zone MK"
                 width={200}
                 height={150}
@@ -24,21 +79,37 @@ export function Footer() {
               
             </div>
             <p className="text-sm md:text-base text-gray-300 mb-4 md:mb-6 text-pretty">
-              We are a community based church with a keen interest in impacting our community through transformational Christ-centered activities and programs.
+              {footerData.description}
             </p>
             <div className="flex space-x-4">
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                <Facebook className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                <Instagram className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                <Youtube className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                <Twitter className="w-5 h-5" />
-              </Button>
+              {footerData.socialMedia.facebook && (
+                <Link href={footerData.socialMedia.facebook} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                    <Facebook className="w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
+              {footerData.socialMedia.instagram && (
+                <Link href={footerData.socialMedia.instagram} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                    <Instagram className="w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
+              {footerData.socialMedia.youtube && (
+                <Link href={footerData.socialMedia.youtube} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                    <Youtube className="w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
+              {footerData.socialMedia.twitter && (
+                <Link href={footerData.socialMedia.twitter} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                    <Twitter className="w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -46,27 +117,13 @@ export function Footer() {
           <div>
             <h4 className="text-base md:text-lg font-semibold mb-4 md:mb-6">Quick Links</h4>
             <ul className="space-y-3">
-              <li>
-                <Link href="/" className="text-gray-300 hover:text-white transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="#events" className="text-gray-300 hover:text-white transition-colors">
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link href="#teachings" className="text-gray-300 hover:text-white transition-colors">
-                  Teachings
-                </Link>
-              </li>
-              
+              {footerData.quickLinks.map((link, index) => (
+                <li key={index}>
+                  <Link href={link.href} className="text-gray-300 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -74,27 +131,15 @@ export function Footer() {
           <div>
             <h4 className="text-base md:text-lg font-semibold mb-4 md:mb-6">Service Times</h4>
             <div className="space-y-4">
-              <div className="flex items-start">
-                <Clock className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">Sunday Worship</p>
-                  <p className="text-gray-300 text-sm">11:00 AM</p>
+              {footerData.serviceTimes.map((service, index) => (
+                <div key={index} className="flex items-start">
+                  <Clock className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">{service.title}</p>
+                    <p className="text-gray-300 text-sm">{service.time}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start">
-                <Clock className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">Tuesday House Fellowship & Bible Study</p>
-                  <p className="text-gray-300 text-sm">7:30 PM (Zoom)</p>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <Clock className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">Thursday Shiloh Hour</p>
-                  <p className="text-gray-300 text-sm">7:00 PM (Zoom)</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -105,24 +150,18 @@ export function Footer() {
               <div className="flex items-start">
                 <MapPin className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-300 text-sm">
-                    Delta Hotels Milton Keynes
-                    <br />
-                    Timbold Drive, Kents Hill
-                    <br />
-                    Milton Keynes, MK7 6HL
-                    <br />
-                    United Kingdom
+                  <p className="text-gray-300 text-sm whitespace-pre-line">
+                    {footerData.contactInfo.address}
                   </p>
                 </div>
               </div>
               <div className="flex items-center">
                 <Phone className="w-5 h-5 text-primary mr-3 flex-shrink-0" />
-                <p className="text-gray-300 text-sm">+44 7445 423178</p>
+                <p className="text-gray-300 text-sm">{footerData.contactInfo.phone}</p>
               </div>
               <div className="flex items-center">
                 <Mail className="w-5 h-5 text-primary mr-3 flex-shrink-0" />
-                <p className="text-gray-300 text-sm">info@holyghostzonemk.org</p>
+                <p className="text-gray-300 text-sm">{footerData.contactInfo.email}</p>
               </div>
             </div>
           </div>
@@ -134,15 +173,15 @@ export function Footer() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
             <p className="text-gray-400 text-xs md:text-sm text-center md:text-left">
-              © {currentYear} Holy Ghost Zone MK. All rights reserved.
+              © {currentYear} {footerData.copyright}
             </p>
             <div className="flex items-center text-gray-400 text-xs md:text-sm">
-              <span>Developed by </span>
-              
-              <Link href="https://www.sillylittletools.com" passHref>
-                <span className="hover:text-primary transition-colors cursor-pointer">&nbsp;SillyLittleTools</span>
-              </Link>
-             
+              <span>{footerData.developerCredit.text} </span>
+              {footerData.developerCredit.link && (
+                <Link href={footerData.developerCredit.link} target="_blank" rel="noopener noreferrer">
+                  <span className="hover:text-primary transition-colors cursor-pointer">&nbsp;{footerData.developerCredit.linkText}</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>

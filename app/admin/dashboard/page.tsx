@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Home, Info, Calendar, BookOpen, Image, LogOut, User } from 'lucide-react';
+import { Home, Info, Calendar, BookOpen, Image, LogOut, User, Navigation, FileText } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const { user, signOut } = useAuth();
@@ -63,6 +63,24 @@ export default function AdminDashboardPage() {
       color: 'from-pink-500 to-pink-600',
       bgColor: 'bg-pink-50',
       iconColor: 'text-pink-600',
+    },
+    {
+      id: 'header',
+      title: 'Header / Navigation',
+      icon: Navigation,
+      description: 'Manage header logos and navigation menu items',
+      color: 'from-cyan-500 to-cyan-600',
+      bgColor: 'bg-cyan-50',
+      iconColor: 'text-cyan-600',
+    },
+    {
+      id: 'footer',
+      title: 'Footer',
+      icon: FileText,
+      description: 'Edit footer content, links, and contact information',
+      color: 'from-indigo-500 to-indigo-600',
+      bgColor: 'bg-indigo-50',
+      iconColor: 'text-indigo-600',
     },
   ];
 
@@ -162,7 +180,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Total Pages</p>
-                <p className="text-3xl font-bold text-gray-900">5</p>
+                <p className="text-3xl font-bold text-gray-900">7</p>
               </div>
               <div className="w-12 h-12 bg-blue-50 flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-blue-600" />

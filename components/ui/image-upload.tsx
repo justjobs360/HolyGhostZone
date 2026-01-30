@@ -13,6 +13,8 @@ interface ImageUploadProps {
   placeholder?: string;
   className?: string;
   previewClassName?: string;
+  accept?: string;
+  label?: string;
 }
 
 export function ImageUpload({
@@ -20,7 +22,9 @@ export function ImageUpload({
   onChange,
   placeholder = "/images/example.jpg",
   className = "",
-  previewClassName = "w-full h-40 object-cover"
+  previewClassName = "w-full h-40 object-cover",
+  accept = "image/*",
+  label = "Image"
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMode, setUploadMode] = useState<'url' | 'file'>('url');
@@ -32,14 +36,19 @@ export function ImageUpload({
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    const isAudio = file.type.startsWith('audio/');
+
+    if (!isImage && !isVideo && !isAudio) {
+      alert('Please select an image, video, or audio file');
       return;
     }
 
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB');
+    // Validate file size (5MB for images, 100MB for video/audio)
+    const maxSize = isImage ? 5 * 1024 * 1024 : 100 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
       return;
     }
 
@@ -133,7 +142,7 @@ export function ImageUpload({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept={accept}
             onChange={handleFileUpload}
             className="hidden"
           />
@@ -151,21 +160,24 @@ export function ImageUpload({
             ) : (
               <>
                 <Upload className="w-4 h-4 mr-2" />
-                Choose Image File
+                Choose {label} File
               </>
             )}
           </Button>
           <p className="text-xs text-gray-500 text-center">
-            Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP
+            {accept.includes('image') ? 'Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP' : 
+             accept.includes('video') ? 'Max file size: 100MB. Supported formats: MP4, WebM, OGG' :
+             accept.includes('audio') ? 'Max file size: 100MB. Supported formats: MP3, OGG, WAV' :
+             'Max file size: 100MB'}
           </p>
         </div>
       )}
 
-      {/* Current Image Preview */}
+      {/* Current Preview */}
       {value && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Current Image:</span>
+            <span className="text-sm font-medium text-gray-700">Current {label}:</span>
             <Button
               type="button"
               variant="outline"
@@ -178,14 +190,20 @@ export function ImageUpload({
             </Button>
           </div>
           <div className="border border-gray-200 p-2">
-            <img
-              src={value}
-              alt="Preview"
-              className={previewClassName}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
+            {accept.includes('video') ? (
+              <video src={value} controls className={previewClassName} />
+            ) : accept.includes('audio') ? (
+              <audio src={value} controls className="w-full" />
+            ) : (
+              <img
+                src={value}
+                alt="Preview"
+                className={previewClassName}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
             <p className="text-xs text-gray-500 mt-1 break-all">{value}</p>
           </div>
         </div>

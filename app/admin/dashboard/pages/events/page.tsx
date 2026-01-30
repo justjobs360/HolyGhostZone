@@ -402,7 +402,7 @@ export default function EventsPageEditor() {
                               />
                             </div>
                             <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Description (use Enter for new lines)</label>
                               <Textarea
                                 value={ev.description}
                                 onChange={(e) => {
@@ -410,8 +410,8 @@ export default function EventsPageEditor() {
                                   list[index] = { ...ev, description: e.target.value }
                                   setPageData({ ...pageData, specialEvents: list })
                                 }}
-                                placeholder="Short description"
-                                rows={2}
+                                placeholder="Enter description. Press Enter for new lines."
+                                rows={4}
                               />
                             </div>
                             <div>

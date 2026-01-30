@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Save, Image as ImageIcon, Type, Loader2, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Image as ImageIcon, Type, Loader2, Plus, Trash2, Video, Music, Link as LinkIcon } from 'lucide-react';
 import { ImageUpload } from '@/components/ui/image-upload';
 import Link from 'next/link';
 
@@ -24,6 +24,10 @@ export default function TeachingsPageEditor() {
     series: '',
     thumbnail: '/pastor-preaching-faith-sermon.jpg',
     description: '',
+    videoUrl: '',
+    audioUrl: '',
+    buttonText: 'Watch Now',
+    buttonLink: '',
   });
   const [newSeries, setNewSeries] = useState({
     title: '',
@@ -58,7 +62,11 @@ export default function TeachingsPageEditor() {
         duration: '45 min',
         series: 'Foundations of Faith',
         thumbnail: '/pastor-preaching-faith-sermon.jpg',
-        description: 'Discover what it means to live by faith and trust God\'s plan for your life, even in uncertain times.'
+        description: 'Discover what it means to live by faith and trust God\'s plan for your life, even in uncertain times.',
+        videoUrl: '',
+        audioUrl: '',
+        buttonText: 'Watch Now',
+        buttonLink: '',
       }
     ],
     teachingSeries: [
@@ -402,6 +410,60 @@ export default function TeachingsPageEditor() {
                                 rows={2}
                               />
                             </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2"><Video className="w-4 h-4 inline mr-2" />Video URL (YouTube, Vimeo, or direct link)</label>
+                              <ImageUpload
+                                value={teaching.videoUrl || ''}
+                                onChange={(url) => {
+                                  const list = [...pageData.recentTeachings]
+                                  list[index] = { ...teaching, videoUrl: url }
+                                  setPageData({ ...pageData, recentTeachings: list })
+                                }}
+                                placeholder="https://youtube.com/watch?v=... or /api/images/..."
+                                accept="video/*"
+                                label="Video"
+                                previewClassName="w-full h-32 object-contain"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2"><Music className="w-4 h-4 inline mr-2" />Audio URL (MP3 or direct link)</label>
+                              <ImageUpload
+                                value={teaching.audioUrl || ''}
+                                onChange={(url) => {
+                                  const list = [...pageData.recentTeachings]
+                                  list[index] = { ...teaching, audioUrl: url }
+                                  setPageData({ ...pageData, recentTeachings: list })
+                                }}
+                                placeholder="https://... or /api/images/..."
+                                accept="audio/*"
+                                label="Audio"
+                                previewClassName="w-full"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2"><LinkIcon className="w-4 h-4 inline mr-2" />Button Text</label>
+                              <Input
+                                value={teaching.buttonText || 'Watch Now'}
+                                onChange={(e) => {
+                                  const list = [...pageData.recentTeachings]
+                                  list[index] = { ...teaching, buttonText: e.target.value }
+                                  setPageData({ ...pageData, recentTeachings: list })
+                                }}
+                                placeholder="Watch Now"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2"><LinkIcon className="w-4 h-4 inline mr-2" />Button Link (optional - overrides video/audio)</label>
+                              <Input
+                                value={teaching.buttonLink || ''}
+                                onChange={(e) => {
+                                  const list = [...pageData.recentTeachings]
+                                  list[index] = { ...teaching, buttonLink: e.target.value }
+                                  setPageData({ ...pageData, recentTeachings: list })
+                                }}
+                                placeholder="https://external-link.com or leave empty to use video/audio"
+                              />
+                            </div>
                           </div>
                           <div className="flex justify-end mt-3">
                             <Button
@@ -460,13 +522,43 @@ export default function TeachingsPageEditor() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                           <Textarea value={newTeaching.description} onChange={(e)=>setNewTeaching({...newTeaching,description:e.target.value})} rows={2} placeholder="Short description" />
                         </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2"><Video className="w-4 h-4 inline mr-2" />Video URL (YouTube, Vimeo, or direct link)</label>
+                          <ImageUpload
+                            value={newTeaching.videoUrl || ''}
+                            onChange={(url)=>setNewTeaching({...newTeaching,videoUrl:url})}
+                            placeholder="https://youtube.com/watch?v=... or /api/images/..."
+                            accept="video/*"
+                            label="Video"
+                            previewClassName="w-full h-32 object-contain"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2"><Music className="w-4 h-4 inline mr-2" />Audio URL (MP3 or direct link)</label>
+                          <ImageUpload
+                            value={newTeaching.audioUrl || ''}
+                            onChange={(url)=>setNewTeaching({...newTeaching,audioUrl:url})}
+                            placeholder="https://... or /api/images/..."
+                            accept="audio/*"
+                            label="Audio"
+                            previewClassName="w-full"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2"><LinkIcon className="w-4 h-4 inline mr-2" />Button Text</label>
+                          <Input value={newTeaching.buttonText || 'Watch Now'} onChange={(e)=>setNewTeaching({...newTeaching,buttonText:e.target.value})} placeholder="Watch Now" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2"><LinkIcon className="w-4 h-4 inline mr-2" />Button Link (optional - overrides video/audio)</label>
+                          <Input value={newTeaching.buttonLink || ''} onChange={(e)=>setNewTeaching({...newTeaching,buttonLink:e.target.value})} placeholder="https://external-link.com or leave empty" />
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <Button
                           onClick={()=>{
                             const list = [...pageData.recentTeachings, { ...newTeaching, id: Date.now() }]
                             setPageData({...pageData, recentTeachings: list})
-                            setNewTeaching({ id: 0, title:'', speaker:'', date:'', duration:'', series:'', thumbnail:'/pastor-preaching-faith-sermon.jpg', description:'' })
+                            setNewTeaching({ id: 0, title:'', speaker:'', date:'', duration:'', series:'', thumbnail:'/pastor-preaching-faith-sermon.jpg', description:'', videoUrl:'', audioUrl:'', buttonText:'Watch Now', buttonLink:'' })
                             setTeachingsTab('list')
                           }}
                         >Save Teaching</Button>

@@ -23,13 +23,38 @@ export function Header() {
     setIsMenuOpen(!isMenuOpen)
   }
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-    { href: "/events", label: "Events" },
-    { href: "/teachings", label: "Teachings" },
-    { href: "/gallery", label: "Gallery" },
-  ]
+  const [headerData, setHeaderData] = useState({
+    mainLogo: '/images/holy-ghost-zone-logo.png',
+    affiliateLogo: '/images/affchurch.avif',
+    affiliateLink: 'https://www.rccg.org/',
+    navItems: [
+      { href: "/", label: "Home", visible: true },
+      { href: "/about", label: "About", visible: true },
+      { href: "/events", label: "Events", visible: true },
+      { href: "/teachings", label: "Teachings", visible: true },
+      { href: "/gallery", label: "Gallery", visible: true },
+    ],
+  })
+
+  useEffect(() => {
+    const loadHeaderData = async () => {
+      try {
+        const response = await fetch('/api/pages/header');
+        if (!response.ok) {
+          console.error('Failed to load header data');
+          return;
+        }
+        const data = await response.json();
+        if (Object.keys(data).length > 0) {
+          setHeaderData(data);
+        }
+      } catch (error) {
+        console.error('Error loading header data:', error);
+      }
+    };
+
+    loadHeaderData();
+  }, []);
 
   return (
     <header
@@ -46,7 +71,7 @@ export function Header() {
             aria-label="Holy Ghost Zone MK Homepage"
           >
             <Image
-              src="/images/holy-ghost-zone-logo.png"
+              src={headerData.mainLogo}
               alt="Holy Ghost Zone MK"
               width={120}
               height={40}
@@ -57,7 +82,7 @@ export function Header() {
 
           {/* Desktop Navigation - Center */}
           <nav className="hidden lg:flex items-center space-x-8 xl:space-x-12">
-            {navItems.map((item) => (
+            {headerData.navItems.filter(item => item.visible !== false).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -75,14 +100,14 @@ export function Header() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Affiliate Logo - Hidden on very small screens, visible on sm and up */}
             <Link
-              href="https://www.rccg.org/"
+              href={headerData.affiliateLink}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105 group"
               aria-label="Visit Affiliated Church"
             >
               <Image
-                src="/images/affchurch.avif"
+                src={headerData.affiliateLogo}
                 alt="Affiliated Church"
                 width={100}
                 height={32}
@@ -117,7 +142,7 @@ export function Header() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Image
-                    src="/images/holy-ghost-zone-logo.png"
+                    src={headerData.mainLogo}
                     alt="Holy Ghost Zone MK"
                     width={120}
                     height={40}
@@ -138,7 +163,7 @@ export function Header() {
               {/* Navigation Links */}
               <nav className="px-4 py-6">
                 <div className="flex flex-col space-y-1">
-                  {navItems.map((item, index) => (
+                  {headerData.navItems.filter(item => item.visible !== false).map((item, index) => (
                     <Link
                       key={item.href}
                       href={item.href}
@@ -156,14 +181,14 @@ export function Header() {
                   <div className="flex flex-col space-y-3">
                     <span className="text-sm text-gray-600 font-medium px-4">Partner Church</span>
                     <Link
-                      href="https://www.rccg.org/"
+                      href={headerData.affiliateLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-200 group"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <Image
-                        src="/images/affchurch.avif"
+                        src={headerData.affiliateLogo}
                         alt="Affiliated Church"
                         width={60}
                         height={20}

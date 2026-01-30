@@ -74,7 +74,7 @@ export function EventCard({
         <h3 className="text-xl font-bold mb-3 text-balance group-hover:text-primary transition-colors duration-300">
           {title}
         </h3>
-        <p className="text-muted-foreground text-pretty mb-6 line-clamp-3 bg-red-50/0 flex-grow">
+        <p className="text-muted-foreground text-pretty mb-6 line-clamp-3 bg-red-50/0 flex-grow whitespace-pre-line">
           {description}
         </p>
 
