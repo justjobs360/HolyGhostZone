@@ -84,30 +84,30 @@ export function Footer() {
             <div className="flex space-x-4">
               {footerData.socialMedia.facebook && (
                 <Link href={footerData.socialMedia.facebook} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                    <Facebook className="w-5 h-5" />
-                  </Button>
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                <Facebook className="w-5 h-5" />
+              </Button>
                 </Link>
               )}
               {footerData.socialMedia.instagram && (
                 <Link href={footerData.socialMedia.instagram} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                    <Instagram className="w-5 h-5" />
-                  </Button>
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                <Instagram className="w-5 h-5" />
+              </Button>
                 </Link>
               )}
               {footerData.socialMedia.youtube && (
                 <Link href={footerData.socialMedia.youtube} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                    <Youtube className="w-5 h-5" />
-                  </Button>
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                <Youtube className="w-5 h-5" />
+              </Button>
                 </Link>
               )}
               {footerData.socialMedia.twitter && (
                 <Link href={footerData.socialMedia.twitter} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
-                    <Twitter className="w-5 h-5" />
-                  </Button>
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10 p-2">
+                <Twitter className="w-5 h-5" />
+              </Button>
                 </Link>
               )}
             </div>
@@ -121,8 +121,8 @@ export function Footer() {
                 <li key={index}>
                   <Link href={link.href} className="text-gray-300 hover:text-white transition-colors">
                     {link.label}
-                  </Link>
-                </li>
+                </Link>
+              </li>
               ))}
             </ul>
           </div>
@@ -133,11 +133,11 @@ export function Footer() {
             <div className="space-y-4">
               {footerData.serviceTimes.map((service, index) => (
                 <div key={index} className="flex items-start">
-                  <Clock className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
-                  <div>
+                <Clock className="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
+                <div>
                     <p className="font-medium">{service.title}</p>
                     <p className="text-gray-300 text-sm">{service.time}</p>
-                  </div>
+              </div>
                 </div>
               ))}
             </div>
@@ -180,7 +180,7 @@ export function Footer() {
               {footerData.developerCredit.link && (
                 <Link href={footerData.developerCredit.link} target="_blank" rel="noopener noreferrer">
                   <span className="hover:text-primary transition-colors cursor-pointer">&nbsp;{footerData.developerCredit.linkText}</span>
-                </Link>
+              </Link>
               )}
             </div>
           </div>

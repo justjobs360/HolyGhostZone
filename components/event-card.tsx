@@ -59,7 +59,7 @@ export function EventCard({
             <span>{time}</span>
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4 mr-2 text-accent" />
+            <MapPin className="w-4 h-4 mr-2 text-primary" />
             <span>{location}</span>
           </div>
           {attendees && (
