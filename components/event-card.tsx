@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -32,9 +32,38 @@ export function EventCard({
   buttonLink = "#",
 }: EventCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  
-  // Show "Read More" if description is longer than approximately 3 lines (roughly 150 characters)
-  const showReadMore = description.length > 150
+  const [showReadMore, setShowReadMore] = useState(false)
+  const descriptionRef = useRef<HTMLParagraphElement>(null)
+
+  useEffect(() => {
+    if (descriptionRef.current && description) {
+      const element = descriptionRef.current
+      
+      // Create a temporary hidden element to measure full height
+      const tempElement = document.createElement('p')
+      tempElement.style.visibility = 'hidden'
+      tempElement.style.position = 'absolute'
+      tempElement.style.width = `${element.offsetWidth}px`
+      tempElement.style.padding = '0'
+      tempElement.style.margin = '0'
+      tempElement.style.whiteSpace = 'pre-line'
+      tempElement.style.fontSize = window.getComputedStyle(element).fontSize
+      tempElement.style.fontFamily = window.getComputedStyle(element).fontFamily
+      tempElement.style.lineHeight = window.getComputedStyle(element).lineHeight
+      tempElement.textContent = description
+      
+      document.body.appendChild(tempElement)
+      const fullHeight = tempElement.scrollHeight
+      document.body.removeChild(tempElement)
+      
+      // Calculate height of 3 lines
+      const lineHeight = parseFloat(window.getComputedStyle(element).lineHeight) || 24
+      const maxHeight = lineHeight * 3
+      
+      // Show read more if content exceeds 3 lines (with small buffer for rounding)
+      setShowReadMore(fullHeight > maxHeight + 2)
+    }
+  }, [description])
 
   return (
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50 h-full flex flex-col">
@@ -84,6 +113,7 @@ export function EventCard({
         </h3>
         <div className="mb-4 flex-grow">
           <p 
+            ref={descriptionRef}
             className={`text-muted-foreground text-pretty whitespace-pre-line transition-all duration-300 ${
               isExpanded ? '' : 'line-clamp-3'
             }`}
