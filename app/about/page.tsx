@@ -158,7 +158,7 @@ export default function AboutPage() {
                   alt="Church community worship"
                   width={600}
                   height={400}
-                  className="rounded-2xl premium-shadow-lg"
+                  className="w-full h-auto"
                 />
               </div>
             </div>
