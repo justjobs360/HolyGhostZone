@@ -183,35 +183,15 @@ export function TeachingCard({
         </h3>
         <p className="text-muted-foreground text-pretty mb-6 line-clamp-3">{description}</p>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            onClick={handleButtonClick}
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-semibold transition-all duration-300 group-hover:shadow-lg"
-            size="lg"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            {buttonText}
-          </Button>
-          {(videoUrl || audioUrl) && (
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                const url = videoUrl || audioUrl;
-                if (url) {
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = title;
-                  link.click();
-                }
-              }}
-              className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground rounded-full font-semibold transition-all duration-300 bg-transparent"
-            >
-              Download
-            </Button>
-          )}
-        </div>
+        {/* Action Button */}
+        <Button
+          onClick={handleButtonClick}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-semibold transition-all duration-300 group-hover:shadow-lg"
+          size="lg"
+        >
+          <Play className="w-4 h-4 mr-2" />
+          {buttonText}
+        </Button>
       </CardContent>
     </Card>
 
