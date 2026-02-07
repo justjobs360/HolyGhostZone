@@ -13,7 +13,7 @@ export async function GET(
             return new NextResponse('Invalid Image ID', { status: 400 });
         }
 
-        const client = await clientPromise;
+        const client = await clientPromise();
         const db = client.db('holyghostzone_storage');
 
         const image = await db.collection('images').findOne({ _id: new ObjectId(id) });

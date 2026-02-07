@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         const buffer = Buffer.from(await file.arrayBuffer());
 
         // Connect to MongoDB
-        const client = await clientPromise;
+        const client = await clientPromise();
         const db = client.db('holyghostzone_storage');
 
         // Save image document
