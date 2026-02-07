@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -28,6 +31,11 @@ export function EventCard({
   buttonText = "Learn More",
   buttonLink = "#",
 }: EventCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  
+  // Show "Read More" if description is longer than approximately 3 lines (roughly 150 characters)
+  const showReadMore = description.length > 150
+
   return (
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50 h-full flex flex-col">
       {/* Image Container */}
@@ -74,9 +82,23 @@ export function EventCard({
         <h3 className="text-xl font-bold mb-3 text-balance group-hover:text-primary transition-colors duration-300">
           {title}
         </h3>
-        <p className="text-muted-foreground text-pretty mb-6 line-clamp-3 bg-red-50/0 flex-grow whitespace-pre-line">
-          {description}
-        </p>
+        <div className="mb-4 flex-grow">
+          <p 
+            className={`text-muted-foreground text-pretty whitespace-pre-line transition-all duration-300 ${
+              isExpanded ? '' : 'line-clamp-3'
+            }`}
+          >
+            {description}
+          </p>
+          {showReadMore && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-primary hover:text-primary/80 text-sm font-medium mt-2 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+            >
+              {isExpanded ? 'Read Less' : 'Read More'}
+            </button>
+          )}
+        </div>
 
         {/* Action Button */}
         <Button
