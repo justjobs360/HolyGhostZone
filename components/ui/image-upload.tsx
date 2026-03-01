@@ -7,6 +7,9 @@ import { Upload, Link as LinkIcon, X, Loader2 } from 'lucide-react';
 // import { storage } from '@/lib/firebase';
 // import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
+const CHUNK_THRESHOLD = 4 * 1024 * 1024; // 4MB – use chunked upload to avoid platform body limits
+const CHUNK_SIZE = 4 * 1024 * 1024;      // 4MB per chunk
+
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
@@ -27,15 +30,71 @@ export function ImageUpload({
   label = "Image"
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadMode, setUploadMode] = useState<'url' | 'file'>('url');
   const [urlInput, setUrlInput] = useState(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadChunked = async (file: File): Promise<string> => {
+    const uploadId = crypto.randomUUID();
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const blob = file.slice(start, end);
+
+      const formData = new FormData();
+      formData.append('chunk', blob);
+      formData.append('uploadId', uploadId);
+      formData.append('chunkIndex', String(i));
+      formData.append('totalChunks', String(totalChunks));
+      formData.append('filename', file.name);
+      formData.append('contentType', file.type);
+
+      const response = await fetch('/api/admin/upload-chunk', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || err.error || 'Chunk upload failed');
+      }
+
+      const data = await response.json();
+      setUploadProgress(Math.round(((i + 1) / totalChunks) * 100));
+
+      if (data.done && data.url) {
+        return data.url;
+      }
+    }
+    throw new Error('Upload did not return URL');
+  };
+
+  const uploadSingle = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+    if (!response.ok) {
+      const contentType = response.headers.get('content-type');
+      let message = 'Upload failed';
+      if (contentType?.includes('application/json')) {
+        const error = await response.json();
+        message = error.detail || error.error || message;
+      } else if (response.status === 413) {
+        message = 'File too large for single upload. Use a smaller file or try again (chunked upload may apply).';
+      }
+      throw new Error(message);
+    }
+    const data = await response.json();
+    return data.url;
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
     const isAudio = file.type.startsWith('audio/');
@@ -45,7 +104,6 @@ export function ImageUpload({
       return;
     }
 
-    // Validate file size (5MB for images, 100MB for video/audio)
     const maxSize = isImage ? 5 * 1024 * 1024 : 100 * 1024 * 1024;
     if (file.size > maxSize) {
       alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
@@ -53,29 +111,21 @@ export function ImageUpload({
     }
 
     setIsUploading(true);
+    setUploadProgress(null);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      const url = file.size > CHUNK_THRESHOLD
+        ? await uploadChunked(file)
+        : await uploadSingle(file);
 
-      const response = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Upload failed');
-      }
-
-      const data = await response.json();
-
-      onChange(data.url);
-      setUrlInput(data.url);
+      onChange(url);
+      setUrlInput(url);
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Error uploading file. Please try again.');
+      const message = error instanceof Error ? error.message : 'Error uploading file. Please try again.';
+      alert(message);
     } finally {
       setIsUploading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -155,7 +205,7 @@ export function ImageUpload({
             {isUploading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Uploading...
+                {uploadProgress != null ? `Uploading… ${uploadProgress}%` : 'Uploading…'}
               </>
             ) : (
               <>
