@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Upload, Link as LinkIcon, X, Loader2 } from 'lucide-react';
@@ -35,6 +35,11 @@ export function ImageUpload({
   const [uploadMode, setUploadMode] = useState<'url' | 'file'>('url');
   const [urlInput, setUrlInput] = useState(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Keep urlInput in sync when parent passes a new value (e.g. so video/audio don't overwrite each other)
+  useEffect(() => {
+    setUrlInput(value);
+  }, [value]);
 
   const uploadChunked = async (file: File): Promise<string> => {
     const uploadId = crypto.randomUUID();

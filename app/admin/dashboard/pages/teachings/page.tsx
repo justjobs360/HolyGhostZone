@@ -415,9 +415,11 @@ export default function TeachingsPageEditor() {
                               <ImageUpload
                                 value={teaching.videoUrl || ''}
                                 onChange={(url) => {
-                                  const list = [...pageData.recentTeachings]
-                                  list[index] = { ...teaching, videoUrl: url }
-                                  setPageData({ ...pageData, recentTeachings: list })
+                                  setPageData((prev) => {
+                                    const list = [...prev.recentTeachings]
+                                    list[index] = { ...list[index], videoUrl: url }
+                                    return { ...prev, recentTeachings: list }
+                                  })
                                 }}
                                 placeholder="https://youtube.com/watch?v=... or /api/images/..."
                                 accept="video/*"
@@ -430,9 +432,11 @@ export default function TeachingsPageEditor() {
                               <ImageUpload
                                 value={teaching.audioUrl || ''}
                                 onChange={(url) => {
-                                  const list = [...pageData.recentTeachings]
-                                  list[index] = { ...teaching, audioUrl: url }
-                                  setPageData({ ...pageData, recentTeachings: list })
+                                  setPageData((prev) => {
+                                    const list = [...prev.recentTeachings]
+                                    list[index] = { ...list[index], audioUrl: url }
+                                    return { ...prev, recentTeachings: list }
+                                  })
                                 }}
                                 placeholder="https://... or /api/images/..."
                                 accept="audio/*"
@@ -491,42 +495,42 @@ export default function TeachingsPageEditor() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                          <Input value={newTeaching.title} onChange={(e)=>setNewTeaching({...newTeaching,title:e.target.value})} placeholder="Teaching title" />
+                          <Input value={newTeaching.title} onChange={(e)=>setNewTeaching(prev=>({...prev,title:e.target.value}))} placeholder="Teaching title" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Speaker</label>
-                          <Input value={newTeaching.speaker} onChange={(e)=>setNewTeaching({...newTeaching,speaker:e.target.value})} placeholder="Speaker name" />
+                          <Input value={newTeaching.speaker} onChange={(e)=>setNewTeaching(prev=>({...prev,speaker:e.target.value}))} placeholder="Speaker name" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                          <Input value={newTeaching.date} onChange={(e)=>setNewTeaching({...newTeaching,date:e.target.value})} placeholder="March 10, 2024" />
+                          <Input value={newTeaching.date} onChange={(e)=>setNewTeaching(prev=>({...prev,date:e.target.value}))} placeholder="March 10, 2024" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
-                          <Input value={newTeaching.duration} onChange={(e)=>setNewTeaching({...newTeaching,duration:e.target.value})} placeholder="45 min" />
+                          <Input value={newTeaching.duration} onChange={(e)=>setNewTeaching(prev=>({...prev,duration:e.target.value}))} placeholder="45 min" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Series</label>
-                          <Input value={newTeaching.series} onChange={(e)=>setNewTeaching({...newTeaching,series:e.target.value})} placeholder="Teaching series" />
+                          <Input value={newTeaching.series} onChange={(e)=>setNewTeaching(prev=>({...prev,series:e.target.value}))} placeholder="Teaching series" />
                         </div>
                         <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-2"><ImageIcon className="w-4 h-4 inline mr-2" />Thumbnail</label>
                           <ImageUpload
                             value={newTeaching.thumbnail}
-                            onChange={(url)=>setNewTeaching({...newTeaching,thumbnail:url})}
+                            onChange={(url)=>setNewTeaching(prev=>({...prev,thumbnail:url}))}
                             placeholder="/pastor-preaching-faith-sermon.jpg"
                             previewClassName="w-full h-32 object-cover"
                           />
                         </div>
                         <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                          <Textarea value={newTeaching.description} onChange={(e)=>setNewTeaching({...newTeaching,description:e.target.value})} rows={2} placeholder="Short description" />
+                          <Textarea value={newTeaching.description} onChange={(e)=>setNewTeaching(prev=>({...prev,description:e.target.value}))} rows={2} placeholder="Short description" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2"><Video className="w-4 h-4 inline mr-2" />Video URL (YouTube, Vimeo, or direct link)</label>
                           <ImageUpload
                             value={newTeaching.videoUrl || ''}
-                            onChange={(url)=>setNewTeaching({...newTeaching,videoUrl:url})}
+                            onChange={(url)=>setNewTeaching(prev=>({...prev,videoUrl:url}))}
                             placeholder="https://youtube.com/watch?v=... or /api/images/..."
                             accept="video/*"
                             label="Video"
@@ -537,7 +541,7 @@ export default function TeachingsPageEditor() {
                           <label className="block text-sm font-medium text-gray-700 mb-2"><Music className="w-4 h-4 inline mr-2" />Audio URL (MP3 or direct link)</label>
                           <ImageUpload
                             value={newTeaching.audioUrl || ''}
-                            onChange={(url)=>setNewTeaching({...newTeaching,audioUrl:url})}
+                            onChange={(url)=>setNewTeaching(prev=>({...prev,audioUrl:url}))}
                             placeholder="https://... or /api/images/..."
                             accept="audio/*"
                             label="Audio"
@@ -546,11 +550,11 @@ export default function TeachingsPageEditor() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2"><LinkIcon className="w-4 h-4 inline mr-2" />Button Text</label>
-                          <Input value={newTeaching.buttonText || 'Watch Now'} onChange={(e)=>setNewTeaching({...newTeaching,buttonText:e.target.value})} placeholder="Watch Now" />
+                          <Input value={newTeaching.buttonText || 'Watch Now'} onChange={(e)=>setNewTeaching(prev=>({...prev,buttonText:e.target.value}))} placeholder="Watch Now" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2"><LinkIcon className="w-4 h-4 inline mr-2" />Button Link (optional - overrides video/audio)</label>
-                          <Input value={newTeaching.buttonLink || ''} onChange={(e)=>setNewTeaching({...newTeaching,buttonLink:e.target.value})} placeholder="https://external-link.com or leave empty" />
+                          <Input value={newTeaching.buttonLink || ''} onChange={(e)=>setNewTeaching(prev=>({...prev,buttonLink:e.target.value}))} placeholder="https://external-link.com or leave empty" />
                         </div>
                       </div>
                       <div className="flex gap-2">
