@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import Image from "next/image"
 import { motion, useSpring } from "framer-motion"
 
 interface HeroData {
@@ -32,8 +31,6 @@ export function HeroSection() {
     secondaryButtonText: 'About',
     secondaryButtonLink: '/about',
   })
-  // If Next/Image fails (e.g. optimizer down, external URL), show native img so cover always displays
-  const [heroImageUseFallback, setHeroImageUseFallback] = useState(false)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -57,7 +54,6 @@ export function HeroSection() {
         const data = await response.json()
         if (data.hero) {
           setHeroData(data.hero)
-          setHeroImageUseFallback(false) // try optimized again for new URL
         }
       } catch (error) {
         console.error('Error loading hero data:', error)
@@ -93,29 +89,15 @@ export function HeroSection() {
       />
       
       <div className="absolute inset-0">
-        {/* Cover image: optimized (WebP/AVIF, responsive) when possible; fallback to native img so it always displays */}
-        {heroImageUseFallback ? (
-          <img
-            src={heroData.backgroundImage}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
-            fetchPriority="high"
-            loading="eager"
-            decoding="async"
-          />
-        ) : (
-          <div className="absolute inset-0 relative bg-gray-900">
-            <Image
-              src={heroData.backgroundImage}
-              alt=""
-              fill
-              className="object-cover object-center"
-              priority
-              sizes="100vw"
-              onError={() => setHeroImageUseFallback(true)}
-            />
-          </div>
-        )}
+        {/* Cover image: native img so it always loads on any host (no dependency on Next Image optimizer) */}
+        <img
+          src={heroData.backgroundImage}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+        />
 
         {/* Super Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/98" />
