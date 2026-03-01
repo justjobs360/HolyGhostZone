@@ -7,9 +7,15 @@ import { Upload, Link as LinkIcon, X, Loader2 } from 'lucide-react';
 // import { storage } from '@/lib/firebase';
 // import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const CHUNK_THRESHOLD = 4 * 1024 * 1024; // 4MB – use chunked upload to avoid platform body limits
-const CHUNK_SIZE = 4 * 1024 * 1024;      // 4MB per chunk
-const CHUNK_CONCURRENCY = 6;             // upload this many chunks at a time
+// Chunk size: use 4MB on Vercel (body limit 4.5MB). Self-hosted? Set NEXT_PUBLIC_UPLOAD_CHUNK_SIZE_MB=50 in .env for much faster uploads.
+const CHUNK_SIZE_MB = typeof process.env.NEXT_PUBLIC_UPLOAD_CHUNK_SIZE_MB !== 'undefined'
+  ? Math.max(1, Math.min(100, Number(process.env.NEXT_PUBLIC_UPLOAD_CHUNK_SIZE_MB) || 4))
+  : 4;
+const CHUNK_THRESHOLD = 4 * 1024 * 1024; // switch to chunked above 4MB
+const CHUNK_SIZE = CHUNK_SIZE_MB * 1024 * 1024;
+const CHUNK_CONCURRENCY = typeof process.env.NEXT_PUBLIC_UPLOAD_CHUNK_CONCURRENCY !== 'undefined'
+  ? Math.max(2, Math.min(20, Number(process.env.NEXT_PUBLIC_UPLOAD_CHUNK_CONCURRENCY) || 8))
+  : 10;
 
 interface ImageUploadProps {
   value: string;

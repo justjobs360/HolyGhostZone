@@ -3,7 +3,8 @@ import { Readable } from 'stream';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId, GridFSBucket } from 'mongodb';
 
-const CHUNK_MAX_BYTES = 4 * 1024 * 1024; // 4MB per chunk (under Vercel 4.5MB limit)
+// Allow up to 100MB per chunk when self-hosted (client can send larger chunks for fewer round-trips). Vercel stays ~4MB.
+const CHUNK_MAX_BYTES = 100 * 1024 * 1024;
 const ASSEMBLY_MAX_DOC_BYTES = 16 * 1024 * 1024 - 1024 * 1024; // ~15MB (under MongoDB 16MB doc limit)
 const CHUNKS_COLLECTION = 'upload_chunks';
 const BUCKET_NAME = 'media';
