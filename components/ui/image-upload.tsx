@@ -9,6 +9,7 @@ import { Upload, Link as LinkIcon, X, Loader2 } from 'lucide-react';
 
 const CHUNK_THRESHOLD = 4 * 1024 * 1024; // 4MB – use chunked upload to avoid platform body limits
 const CHUNK_SIZE = 4 * 1024 * 1024;      // 4MB per chunk
+const CHUNK_CONCURRENCY = 6;             // upload this many chunks at a time
 
 interface ImageUploadProps {
   value: string;
@@ -38,16 +39,18 @@ export function ImageUpload({
   const uploadChunked = async (file: File): Promise<string> => {
     const uploadId = crypto.randomUUID();
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    let completed = 0;
+    let resultUrl: string | null = null;
 
-    for (let i = 0; i < totalChunks; i++) {
-      const start = i * CHUNK_SIZE;
+    const uploadOneChunk = async (chunkIndex: number): Promise<void> => {
+      const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, file.size);
       const blob = file.slice(start, end);
 
       const formData = new FormData();
       formData.append('chunk', blob);
       formData.append('uploadId', uploadId);
-      formData.append('chunkIndex', String(i));
+      formData.append('chunkIndex', String(chunkIndex));
       formData.append('totalChunks', String(totalChunks));
       formData.append('filename', file.name);
       formData.append('contentType', file.type);
@@ -63,12 +66,25 @@ export function ImageUpload({
       }
 
       const data = await response.json();
-      setUploadProgress(Math.round(((i + 1) / totalChunks) * 100));
+      completed += 1;
+      setUploadProgress(Math.round((completed / totalChunks) * 100));
+      if (data.done && data.url) resultUrl = data.url;
+    };
 
-      if (data.done && data.url) {
-        return data.url;
+    // Run chunk uploads in parallel with concurrency limit
+    const indices = Array.from({ length: totalChunks }, (_, i) => i);
+    let next = 0;
+    const run = async (): Promise<void> => {
+      while (next < indices.length) {
+        const i = indices[next++];
+        await uploadOneChunk(i);
       }
-    }
+    };
+    await Promise.all(
+      Array.from({ length: Math.min(CHUNK_CONCURRENCY, totalChunks) }, () => run())
+    );
+
+    if (resultUrl) return resultUrl;
     throw new Error('Upload did not return URL');
   };
 
@@ -104,7 +120,7 @@ export function ImageUpload({
       return;
     }
 
-    const maxSize = isImage ? 5 * 1024 * 1024 : 100 * 1024 * 1024;
+    const maxSize = isImage ? 5 * 1024 * 1024 : 1000 * 1024 * 1024; // 5MB images, 1GB video/audio
     if (file.size > maxSize) {
       alert(`File size must be less than ${maxSize / (1024 * 1024)}MB`);
       return;
@@ -216,9 +232,9 @@ export function ImageUpload({
           </Button>
           <p className="text-xs text-gray-500 text-center">
             {accept.includes('image') ? 'Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP' : 
-             accept.includes('video') ? 'Max file size: 100MB. Supported formats: MP4, WebM, OGG' :
-             accept.includes('audio') ? 'Max file size: 100MB. Supported formats: MP3, OGG, WAV' :
-             'Max file size: 100MB'}
+             accept.includes('video') ? 'Max file size: 1GB. Supported formats: MP4, WebM, OGG' :
+             accept.includes('audio') ? 'Max file size: 1GB. Supported formats: MP3, OGG, WAV' :
+             'Max file size: 1GB'}
           </p>
         </div>
       )}

@@ -130,18 +130,23 @@ export function TeachingCard({
   return (
     <>
       <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-card border-border/50">
-      {/* Video Thumbnail Container */}
-      <div className="relative overflow-hidden">
+      {/* Video Thumbnail Container - clickable to open player */}
+      <button
+        type="button"
+        onClick={handleButtonClick}
+        className={`relative w-full overflow-hidden text-left border-0 p-0 bg-transparent block ${(videoUrl || audioUrl || buttonLink) ? "cursor-pointer" : "cursor-default"}`}
+        aria-label={videoUrl || audioUrl || buttonLink ? `Play: ${title}` : undefined}
+      >
         <Image
           src={thumbnail || "/placeholder.svg"}
           alt={title}
           width={400}
           height={240}
-          className="w-full h-60 object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-60 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
         />
 
         {/* Play Button Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-300">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
             <Play className="w-8 h-8 text-primary-foreground ml-1" fill="currentColor" />
           </div>
@@ -149,7 +154,7 @@ export function TeachingCard({
 
         {/* Series Badge */}
         {series && (
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-4 left-4 pointer-events-none">
             <span className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm font-medium">
               {series}
             </span>
@@ -157,10 +162,10 @@ export function TeachingCard({
         )}
 
         {/* Duration Badge */}
-        <div className="absolute bottom-4 right-4">
+        <div className="absolute bottom-4 right-4 pointer-events-none">
           <span className="bg-black/70 text-white px-2 py-1 rounded text-sm font-medium">{duration}</span>
         </div>
-      </div>
+      </button>
 
       <CardContent className="p-6">
         {/* Teaching Details */}

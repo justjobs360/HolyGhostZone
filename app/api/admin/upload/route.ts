@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'File must be an image, video, or audio file' }, { status: 400 });
         }
 
-        // Increase size limit for video/audio files
-        const maxSize = isImage ? 5 * 1024 * 1024 : 100 * 1024 * 1024; // 5MB for images, 100MB for video/audio
+        // 5MB for images, 1GB for video/audio
+        const maxSize = isImage ? 5 * 1024 * 1024 : 1000 * 1024 * 1024;
         if (file.size > maxSize) {
             return NextResponse.json({ error: `File size must be less than ${maxSize / (1024 * 1024)}MB` }, { status: 400 });
         }
