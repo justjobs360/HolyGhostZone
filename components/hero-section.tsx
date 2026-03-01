@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import Image from "next/image"
 import { motion, useSpring } from "framer-motion"
 
 interface HeroData {
@@ -90,18 +89,12 @@ export function HeroSection() {
       />
       
       <div className="absolute inset-0">
-        {/* Background Image - Next/Image with priority for fast LCP */}
-        <div className="absolute inset-0 relative bg-gray-900">
-          <Image
-            src={heroData.backgroundImage}
-            alt=""
-            fill
-            className="object-cover object-center"
-            priority
-            sizes="100vw"
-          />
-        </div>
-        
+        {/* Background Image - CSS background so it always loads and displays */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-gray-900"
+          style={{ backgroundImage: `url('${heroData.backgroundImage}')` }}
+        />
+
         {/* Super Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/98" />
         
