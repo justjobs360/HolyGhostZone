@@ -48,7 +48,7 @@ export default function FollowJesus() {
           alt="Practice the way of Jesus"
           fill
           className="object-cover"
-          priority
+          sizes="100vw"
         />
       </div>
 

@@ -1,14 +1,12 @@
+import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
-import { AboutPreview } from "@/components/about-preview"
-import { EventLanding } from "@/components/eventlanding"
-import { Location } from "@/components/location"
-
 import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, BookOpen, Camera, Users } from "lucide-react"
-import Link from "next/link"
+
+// Load below-the-fold sections after initial paint to reduce TBT and improve LCP
+const AboutPreview = dynamic(() => import("@/components/about-preview").then((m) => ({ default: m.AboutPreview })), { ssr: true })
+const EventLanding = dynamic(() => import("@/components/eventlanding").then((m) => ({ default: m.EventLanding })), { ssr: true })
+const Location = dynamic(() => import("@/components/location").then((m) => ({ default: m.Location })), { ssr: true })
 
 export default function HomePage() {
   return (
@@ -19,7 +17,6 @@ export default function HomePage() {
         <AboutPreview />
         <EventLanding />
         <Location />
-
       </main>
       <Footer />
     </div>

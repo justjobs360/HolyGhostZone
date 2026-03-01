@@ -54,7 +54,7 @@ export default function NewToTown() {
               alt="New to Holy Ghost Zone"
               fill
               className="object-cover"
-              priority
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
 

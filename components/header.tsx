@@ -77,6 +77,7 @@ export function Header() {
               height={40}
               className="h-14 sm:h-14 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
               priority
+              sizes="(max-width: 1024px) 120px, 166px"
             />
           </Link>
 
@@ -113,6 +114,7 @@ export function Header() {
                 height={32}
                 className="h-6 sm:h-8 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
                 priority
+                sizes="(max-width: 640px) 80px, 128px"
               />
             </Link>
 

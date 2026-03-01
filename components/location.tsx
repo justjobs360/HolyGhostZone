@@ -54,6 +54,7 @@ export function Location() {
                 width={200}
                 height={100}
                 className="h-20 md:h-24 lg:h-28 w-auto object-contain"
+                sizes="200px"
               />
             </div>
           )}

@@ -75,6 +75,7 @@ export function Footer() {
                 width={200}
                 height={150}
                 className="mr-3 w-40 md:w-48 lg:w-52 h-auto"
+                sizes="(max-width: 768px) 160px, 208px"
               />
               
             </div>

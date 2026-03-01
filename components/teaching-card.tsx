@@ -143,6 +143,7 @@ export function TeachingCard({
           width={400}
           height={240}
           className="w-full h-60 object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
         />
 
         {/* Play Button Overlay */}
