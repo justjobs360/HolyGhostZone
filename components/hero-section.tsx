@@ -16,10 +16,15 @@ interface HeroData {
 }
 
 export function HeroSection() {
-  // Smooth spring animations for cursor follower
+  const [isDesktop, setIsDesktop] = useState(false)
+  // Smooth spring animations for cursor follower (desktop only — avoid main-thread work on mobile)
   const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
   const cursorX = useSpring(0, springConfig)
   const cursorY = useSpring(0, springConfig)
+
+  useEffect(() => {
+    setIsDesktop(window.matchMedia('(min-width: 769px)').matches)
+  }, [])
 
   // Hero data state
   const [heroData, setHeroData] = useState<HeroData>({
@@ -65,29 +70,31 @@ export function HeroSection() {
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Cursor Follower - Smooth Spring Animation with Radiant Glow (Only in Hero Section) */}
-      <motion.div
-        className="pointer-events-none absolute z-30 w-80 h-80 rounded-full blur-3xl"
-        style={{
-          left: cursorX,
-          top: cursorY,
-          background: "radial-gradient(circle, rgba(246,160,35,0.35) 0%, rgba(13,163,230,0.25) 50%, transparent 70%)",
-          boxShadow: "0 0 50px rgba(246,160,35,0.4), 0 0 80px rgba(13,163,230,0.2)",
-        }}
-      />
-      
-      {/* Secondary Cursor Follower - Smaller, More Intense */}
-      <motion.div
-        className="pointer-events-none absolute z-30 w-48 h-48 rounded-full blur-2xl"
-        style={{
-          left: cursorX,
-          top: cursorY,
-          background: "radial-gradient(circle, rgba(246,160,35,0.5) 0%, rgba(255,165,0,0.3) 40%, transparent 70%)",
-          boxShadow: "0 0 30px rgba(246,160,35,0.6)",
-        }}
-        transition={{ delay: 0.05 }}
-      />
-      
+      {/* Cursor followers: desktop only (mobile = no hover, saves main-thread and non-composited animation) */}
+      {isDesktop && (
+        <>
+          <motion.div
+            className="pointer-events-none absolute z-30 w-80 h-80 rounded-full blur-3xl"
+            style={{
+              left: cursorX,
+              top: cursorY,
+              background: "radial-gradient(circle, rgba(246,160,35,0.35) 0%, rgba(13,163,230,0.25) 50%, transparent 70%)",
+              boxShadow: "0 0 50px rgba(246,160,35,0.4), 0 0 80px rgba(13,163,230,0.2)",
+            }}
+          />
+          <motion.div
+            className="pointer-events-none absolute z-30 w-48 h-48 rounded-full blur-2xl"
+            style={{
+              left: cursorX,
+              top: cursorY,
+              background: "radial-gradient(circle, rgba(246,160,35,0.5) 0%, rgba(255,165,0,0.3) 40%, transparent 70%)",
+              boxShadow: "0 0 30px rgba(246,160,35,0.6)",
+            }}
+            transition={{ delay: 0.05 }}
+          />
+        </>
+      )}
+
       <div className="absolute inset-0">
         {/* Cover: responsive hero — smaller image on mobile (faster LCP), full quality on desktop; always displays */}
         {heroData.backgroundImage.startsWith('/images/') ? (
@@ -122,86 +129,86 @@ export function HeroSection() {
         {/* Additional dramatic overlay for extra depth */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
 
-        {/* Sophisticated animated elements */}
-        <div className="absolute inset-0">
-          <motion.div 
-            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full blur-3xl"
-            animate={{
-              y: [0, -30, 0],
-              x: [0, 20, 0],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-secondary/12 to-primary/12 rounded-full blur-3xl"
-            animate={{
-              y: [0, 40, 0],
-              x: [0, -25, 0],
-              scale: [1, 1.15, 1],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1,
-            }}
-          />
-          <motion.div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-primary/8 to-secondary/8 rounded-full blur-3xl"
-            animate={{
-              y: [0, -20, 0],
-              x: [0, 15, 0],
-              scale: [1, 1.2, 1],
-              rotate: [0, 180, 360],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-          />
-        </div>
-        
-        {/* Floating Particles */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(15)].map((_, i) => {
-            // Use deterministic values based on index to avoid hydration mismatch
-            const xOffset = ((i * 37) % 50) - 25; // Deterministic x offset
-            const duration = 3 + ((i * 17) % 40) / 10; // Deterministic duration 3-7s
-            const delay = (i * 23) % 30 / 10; // Deterministic delay 0-3s
-            const left = ((i * 47) % 100); // Deterministic left position
-            const top = ((i * 67) % 100); // Deterministic top position
-            
-            return (
+        {/* Gradient orbs + particles: desktop only (mobile = fewer animations, better LCP) */}
+        {isDesktop && (
+          <>
+            <div className="absolute inset-0">
               <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-primary/40 rounded-full"
+                className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full blur-3xl"
                 animate={{
-                  y: [0, -100, 0],
-                  x: [0, xOffset, 0],
-                  opacity: [0.2, 0.8, 0.2],
-                  scale: [1, 1.5, 1],
+                  y: [0, -30, 0],
+                  x: [0, 20, 0],
+                  scale: [1, 1.1, 1],
                 }}
                 transition={{
-                  duration,
+                  duration: 8,
                   repeat: Infinity,
                   ease: "easeInOut",
-                  delay,
-                }}
-                style={{
-                  left: `${left}%`,
-                  top: `${top}%`,
                 }}
               />
-            );
-          })}
-        </div>
+              <motion.div
+                className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-secondary/12 to-primary/12 rounded-full blur-3xl"
+                animate={{
+                  y: [0, 40, 0],
+                  x: [0, -25, 0],
+                  scale: [1, 1.15, 1],
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1,
+                }}
+              />
+              <motion.div
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-primary/8 to-secondary/8 rounded-full blur-3xl"
+                animate={{
+                  y: [0, -20, 0],
+                  x: [0, 15, 0],
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 180, 360],
+                }}
+                transition={{
+                  duration: 12,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2,
+                }}
+              />
+            </div>
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(15)].map((_, i) => {
+                const xOffset = ((i * 37) % 50) - 25;
+                const duration = 3 + ((i * 17) % 40) / 10;
+                const delay = (i * 23) % 30 / 10;
+                const left = ((i * 47) % 100);
+                const top = ((i * 67) % 100);
+                return (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 bg-primary/40 rounded-full"
+                    animate={{
+                      y: [0, -100, 0],
+                      x: [0, xOffset, 0],
+                      opacity: [0.2, 0.8, 0.2],
+                      scale: [1, 1.5, 1],
+                    }}
+                    transition={{
+                      duration,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay,
+                    }}
+                    style={{
+                      left: `${left}%`,
+                      top: `${top}%`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
 
         {/* Premium mesh pattern */}
         <div
@@ -222,6 +229,7 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-10 h-full flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {isDesktop ? (
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -367,6 +375,46 @@ export function HeroSection() {
               </motion.div>
             </div>
           </motion.div>
+          ) : (
+            /* Mobile: static content, no entrance animation — improves LCP "element render delay" */
+            <div className="max-w-7xl w-full text-left">
+              <h1
+                className="font-bold text-balance mb-6 md:mb-8 leading-[1.1] md:leading-[0.9] tracking-tight text-white"
+                style={{ fontSize: 'clamp(2.5rem, 7vw, 5rem)' }}
+              >
+                {heroData.title.split(' ').map((word, i) => (
+                  <span key={i}>
+                    {word === 'Power' ? (
+                      <span className="gradient-text font-black">{word}</span>
+                    ) : word === 'Faith' ? (
+                      <span className="text-primary font-black">{word}</span>
+                    ) : (
+                      word
+                    )}
+                    {' '}
+                  </span>
+                ))}
+              </h1>
+              <p
+                className="text-gray-200 text-pretty mb-8 md:mb-12 leading-relaxed font-light max-w-4xl"
+                style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}
+              >
+                {heroData.subtitle}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-stretch sm:items-start">
+                <Link href={heroData.primaryButtonLink} className="w-full sm:w-auto">
+                  <button className="w-full sm:w-auto border-2 border-primary text-white bg-primary hover:bg-primary/90 px-6 md:px-8 py-3 text-xs md:text-sm font-medium uppercase tracking-wide transition-all duration-300">
+                    {heroData.primaryButtonText}
+                  </button>
+                </Link>
+                <Link href={heroData.secondaryButtonLink} className="w-full sm:w-auto">
+                  <button className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 md:px-8 py-3 text-xs md:text-sm font-medium uppercase tracking-wide transition-all duration-300">
+                    {heroData.secondaryButtonText}
+                  </button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
