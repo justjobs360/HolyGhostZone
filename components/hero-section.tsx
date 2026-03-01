@@ -89,9 +89,13 @@ export function HeroSection() {
       />
       
       <div className="absolute inset-0">
-        {/* Cover image: native img so it always loads on any host (no dependency on Next Image optimizer) */}
+        {/* Cover: optimized WebP for local /images/* (fast LCP), raw URL otherwise so it always displays */}
         <img
-          src={heroData.backgroundImage}
+          src={
+            heroData.backgroundImage.startsWith('/images/')
+              ? `/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}`
+              : heroData.backgroundImage
+          }
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
           fetchPriority="high"

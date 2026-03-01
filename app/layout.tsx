@@ -33,6 +33,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        {/* Preload optimized hero so it starts loading before React */}
+        <link
+          rel="preload"
+          as="image"
+          href="/api/hero-image?url=%2Fimages%2Fbgimg.jpeg"
+        />
+      </head>
       <body className="font-sans antialiased">
         <AuthProvider>
           <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
