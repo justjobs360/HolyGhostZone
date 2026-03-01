@@ -1,36 +1,18 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { 
-  User, 
-  onAuthStateChanged, 
+import { useEffect, useState, ReactNode } from 'react';
+import {
+  User,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   UserCredential
 } from 'firebase/auth';
 import { auth } from './firebase';
+import { AuthContext } from './auth-context-base';
+import type { AuthContextType } from './auth-context-base';
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<UserCredential>;
-  signOut: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  signIn: async () => { throw new Error('AuthContext not initialized'); },
-  signOut: async () => { throw new Error('AuthContext not initialized'); },
-});
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export { useAuth, FallbackAuthProvider } from './auth-context-base';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -70,4 +52,3 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     </AuthContext.Provider>
   );
 };
-

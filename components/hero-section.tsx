@@ -94,7 +94,7 @@ export function HeroSection() {
           <picture className="absolute inset-0 block w-full h-full">
             <source
               media="(max-width: 768px)"
-              srcSet={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}&w=828&q=72`}
+              srcSet={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}&w=828&q=65`}
             />
             <img
               src={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}`}

@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import { AuthProvider } from "@/lib/auth-context"
+import { MobileDeferredAuth } from "@/components/mobile-deferred-auth"
 import "./globals.css"
 
 const inter = Inter({
@@ -38,7 +38,7 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/api/hero-image?url=%2Fimages%2Fbgimg.jpeg&w=828&q=72"
+          href="/api/hero-image?url=%2Fimages%2Fbgimg.jpeg&w=828&q=65"
           media="(max-width: 768px)"
         />
         <link
@@ -47,15 +47,13 @@ export default function RootLayout({
           href="/api/hero-image?url=%2Fimages%2Fbgimg.jpeg"
           media="(min-width: 769px)"
         />
-        {/* Preconnect to critical third parties (mobile LCP savings; desktop unchanged) */}
-        <link rel="preconnect" href="https://holyghostzonerccg.firebaseapp.com" />
-        <link rel="preconnect" href="https://maps.googleapis.com" />
-        <link rel="preconnect" href="https://maps.gstatic.com" crossOrigin="" />
+        {/* Firebase only: preconnect for auth iframe (Maps deferred until map in view, so no preconnect) */}
+        <link rel="preconnect" href="https://holyghostzonerccg.firebaseapp.com" crossOrigin="" />
       </head>
       <body className="font-sans antialiased">
-        <AuthProvider>
+        <MobileDeferredAuth>
           <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-        </AuthProvider>
+        </MobileDeferredAuth>
         <Analytics />
       </body>
     </html>
