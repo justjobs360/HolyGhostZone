@@ -34,12 +34,23 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
-        {/* Preload optimized hero so it starts loading before React */}
+        {/* Preload hero: mobile gets smaller image, desktop unchanged (media so only one request) */}
+        <link
+          rel="preload"
+          as="image"
+          href="/api/hero-image?url=%2Fimages%2Fbgimg.jpeg&w=828&q=72"
+          media="(max-width: 768px)"
+        />
         <link
           rel="preload"
           as="image"
           href="/api/hero-image?url=%2Fimages%2Fbgimg.jpeg"
+          media="(min-width: 769px)"
         />
+        {/* Preconnect to critical third parties (mobile LCP savings; desktop unchanged) */}
+        <link rel="preconnect" href="https://holyghostzonerccg.firebaseapp.com" />
+        <link rel="preconnect" href="https://maps.googleapis.com" />
+        <link rel="preconnect" href="https://maps.gstatic.com" crossOrigin="" />
       </head>
       <body className="font-sans antialiased">
         <AuthProvider>

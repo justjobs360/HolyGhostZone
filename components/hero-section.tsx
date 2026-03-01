@@ -89,19 +89,32 @@ export function HeroSection() {
       />
       
       <div className="absolute inset-0">
-        {/* Cover: optimized WebP for local /images/* (fast LCP), raw URL otherwise so it always displays */}
-        <img
-          src={
-            heroData.backgroundImage.startsWith('/images/')
-              ? `/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}`
-              : heroData.backgroundImage
-          }
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
-          fetchPriority="high"
-          loading="eager"
-          decoding="async"
-        />
+        {/* Cover: responsive hero — smaller image on mobile (faster LCP), full quality on desktop; always displays */}
+        {heroData.backgroundImage.startsWith('/images/') ? (
+          <picture className="absolute inset-0 block w-full h-full">
+            <source
+              media="(max-width: 768px)"
+              srcSet={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}&w=828&q=72`}
+            />
+            <img
+              src={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}`}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
+        ) : (
+          <img
+            src={heroData.backgroundImage}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+          />
+        )}
 
         {/* Super Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/98" />

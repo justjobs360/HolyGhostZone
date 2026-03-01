@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Clock, Phone, Mail } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 
 interface FindUsData {
@@ -21,6 +21,21 @@ export function Location() {
     phone: "+44 123 456 7890",
     email: "info@holyghostzone.com"
   });
+  const [mapInView, setMapInView] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = mapContainerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setMapInView(true);
+      },
+      { rootMargin: '100px', threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     const loadPageData = async () => {
@@ -66,20 +81,21 @@ export function Location() {
           </p>
         </div>
 
-        {/* Map */}
-        <div className="w-full">
-          <div className="aspect-[16/9] md:aspect-[16/7] lg:aspect-[16/6] overflow-hidden rounded-lg">
-          
-            <iframe
-              src={findUsData.mapUrl}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Holy Ghost Zone MK Location"
-            />
+        {/* Map: load iframe only when in viewport to keep Maps off critical path (mobile + desktop) */}
+        <div className="w-full" ref={mapContainerRef}>
+          <div className="aspect-[16/9] md:aspect-[16/7] lg:aspect-[16/6] overflow-hidden rounded-lg bg-gray-100">
+            {mapInView && (
+              <iframe
+                src={findUsData.mapUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Holy Ghost Zone MK Location"
+              />
+            )}
           </div>
         </div>
 
