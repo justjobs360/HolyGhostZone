@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, MapPin, Clock, ChevronLeft, ChevronRight } from "lucide-react"
@@ -178,15 +179,16 @@ export function EventLanding() {
 
   return (
     <section className="relative pt-4 pb-8 bg-gray-900 overflow-hidden">
-      {/* Blurred Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url('/images/carousel.jpg')`,
-          filter: 'blur(8px)',
-          transform: 'scale(1.1)'
-        }}
-      />
+      {/* Blurred Background Image - optimized */}
+      <div className="absolute inset-0 relative overflow-hidden">
+        <Image
+          src="/images/carousel.jpg"
+          alt=""
+          fill
+          className="object-cover object-center scale-110 blur-md"
+          sizes="100vw"
+        />
+      </div>
 
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-gray-900/80" />
@@ -224,12 +226,14 @@ export function EventLanding() {
                       href={event.buttonLink}
                       target={event.buttonLink?.startsWith('http') ? '_blank' : undefined}
                       rel={event.buttonLink?.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      className="block aspect-[4/3] rounded-lg overflow-hidden mb-3 cursor-pointer"
+                      className="block aspect-[4/3] rounded-lg overflow-hidden mb-3 cursor-pointer relative"
                     >
-                      <img
+                      <Image
                         src={event.image}
                         alt={event.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </a>
 

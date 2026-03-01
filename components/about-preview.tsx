@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Church, BookOpen, Calendar } from "lucide-react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import NewToTown from "@/components/newtotown"
 import FollowJesus from "@/components/followjesus"
 
@@ -140,25 +141,31 @@ export function AboutPreview() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
                   {/* Left Column - Image Grid */}
                   <div className="grid grid-cols-2 gap-3 md:gap-4">
-                    <div className="col-span-2 aspect-[2/1] rounded-lg overflow-hidden">
-                      <img 
-                        src={whoWeAreData.images[0] || "/images/rccg.JPG"} 
-                        alt="RCCG Church" 
-                        className="w-full h-full object-cover"
+                    <div className="col-span-2 aspect-[2/1] rounded-lg overflow-hidden relative">
+                      <Image
+                        src={whoWeAreData.images[0] || "/images/rccg.JPG"}
+                        alt="RCCG Church"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                       />
                     </div>
-                    <div className="aspect-square rounded-lg overflow-hidden">
-                      <img 
-                        src={whoWeAreData.images[1] || "/images/2hgz.JPG"} 
-                        alt="Community service" 
-                        className="w-full h-full object-cover"
+                    <div className="aspect-square rounded-lg overflow-hidden relative">
+                      <Image
+                        src={whoWeAreData.images[1] || "/images/2hgz.JPG"}
+                        alt="Community service"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 50vw, 25vw"
                       />
                     </div>
-                    <div className="aspect-square rounded-lg overflow-hidden">
-                      <img 
-                        src={whoWeAreData.images[2] || "/images/3hgz.png"} 
-                        alt="Pastor preaching" 
-                        className="w-full h-full object-cover"
+                    <div className="aspect-square rounded-lg overflow-hidden relative">
+                      <Image
+                        src={whoWeAreData.images[2] || "/images/3hgz.png"}
+                        alt="Pastor preaching"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 50vw, 25vw"
                       />
                     </div>
                   </div>
@@ -237,11 +244,13 @@ export function AboutPreview() {
                    </div>
 
                    {/* Right Column - Image */}
-                   <div className="aspect-[4/3]">
-                     <img 
-                       src={ourServicesData.backgroundImage} 
-                       alt="Church service" 
-                       className="w-full h-full object-cover rounded-lg"
+                   <div className="aspect-[4/3] relative rounded-lg overflow-hidden">
+                     <Image
+                       src={ourServicesData.backgroundImage}
+                       alt="Church service"
+                       fill
+                       className="object-cover"
+                       sizes="(max-width: 1024px) 100vw, 50vw"
                      />
                    </div>
                  </div>
@@ -256,12 +265,9 @@ export function AboutPreview() {
              <div key={index}>
                <section className="relative min-h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden py-16 md:py-0">
                  {/* Background Image */}
-                 <div 
-                   className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                   style={{
-                     backgroundImage: `url('${section.backgroundImage}')`
-                   }}
-                 />
+                 <div className="absolute inset-0 relative">
+                   <Image src={section.backgroundImage} alt="" fill className="object-cover object-center" sizes="100vw" />
+                 </div>
                  
                  {/* Dark Overlay */}
                  <div className="absolute inset-0 bg-gradient-to-br from-gray-900/70 via-gray-800/60 to-gray-900/75" />
@@ -295,12 +301,9 @@ export function AboutPreview() {
          return (
            <section key={index} className="relative min-h-screen flex items-center justify-center overflow-hidden">
              {/* Background Image */}
-             <div 
-               className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-               style={{
-                 backgroundImage: `url('${section.backgroundImage}')`
-               }}
-             />
+             <div className="absolute inset-0 relative">
+               <Image src={section.backgroundImage} alt="" fill className="object-cover object-center" sizes="100vw" />
+             </div>
              
              {/* Dark Overlay */}
              <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-gray-900/60 to-black/80" />

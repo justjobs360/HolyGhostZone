@@ -33,6 +33,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        {/* Preload LCP hero image so it starts loading immediately */}
+        <link rel="preload" as="image" href="/images/bgimg.jpeg" />
+      </head>
       <body className="font-sans antialiased">
         <AuthProvider>
           <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
