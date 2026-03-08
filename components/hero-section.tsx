@@ -26,16 +26,9 @@ export function HeroSection() {
     setIsDesktop(window.matchMedia('(min-width: 769px)').matches)
   }, [])
 
-  // Hero data: default from first paint to avoid CLS (no skeleton → content shift)
-  const [heroData, setHeroData] = useState<HeroData>({
-    title: 'Experience the Power of Faith',
-    subtitle: 'Join our vibrant community where modern worship meets timeless truth. Discover your purpose, grow in faith, and make lasting connections.',
-    backgroundImage: '/images/bgimg.jpeg',
-    primaryButtonText: 'Teachings',
-    primaryButtonLink: '/teachings',
-    secondaryButtonText: 'About',
-    secondaryButtonLink: '/about',
-  })
+  // Hero data state — start null so we never show stale/default image until fetch completes
+  const [heroData, setHeroData] = useState<HeroData | null>(null)
+  const [heroDataReady, setHeroDataReady] = useState(false)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -47,17 +40,54 @@ export function HeroSection() {
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [cursorX, cursorY])
 
+  // Load hero data from API — don't show hero image until this completes to avoid flash of old content
   useEffect(() => {
     const loadHeroData = async () => {
       try {
         const response = await fetch('/api/pages/home', { cache: 'no-store' })
-        if (!response.ok) return
-        const data = await response.json()
-        if (data.hero) setHeroData(data.hero)
+        if (!response.ok) {
+          console.error('Failed to load hero data')
+          setHeroData({
+            title: 'Experience the Power of Faith',
+            subtitle: 'Join our vibrant community where modern worship meets timeless truth. Discover your purpose, grow in faith, and make lasting connections.',
+            backgroundImage: '/images/bgimg.jpeg',
+            primaryButtonText: 'Teachings',
+            primaryButtonLink: '/teachings',
+            secondaryButtonText: 'About',
+            secondaryButtonLink: '/about',
+          })
+        } else {
+          const data = await response.json()
+          if (data.hero) {
+            setHeroData(data.hero)
+          } else {
+            setHeroData({
+              title: 'Experience the Power of Faith',
+              subtitle: 'Join our vibrant community where modern worship meets timeless truth. Discover your purpose, grow in faith, and make lasting connections.',
+              backgroundImage: '/images/bgimg.jpeg',
+              primaryButtonText: 'Teachings',
+              primaryButtonLink: '/teachings',
+              secondaryButtonText: 'About',
+              secondaryButtonLink: '/about',
+            })
+          }
+        }
       } catch (error) {
         console.error('Error loading hero data:', error)
+        setHeroData({
+          title: 'Experience the Power of Faith',
+          subtitle: 'Join our vibrant community where modern worship meets timeless truth. Discover your purpose, grow in faith, and make lasting connections.',
+          backgroundImage: '/images/bgimg.jpeg',
+          primaryButtonText: 'Teachings',
+          primaryButtonLink: '/teachings',
+          secondaryButtonText: 'About',
+          secondaryButtonLink: '/about',
+        })
+      } finally {
+        setHeroDataReady(true)
       }
     }
+
     loadHeroData()
   }, [])
 
@@ -89,32 +119,36 @@ export function HeroSection() {
       )}
 
       <div className="absolute inset-0">
-        {/* Hero image: always present from first paint to avoid CLS */}
-        {heroData.backgroundImage.startsWith('/images/') ? (
-          <picture className="absolute inset-0 block w-full h-full">
-            <source
-              media="(max-width: 768px)"
-              srcSet={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}&w=828&q=65`}
-            />
+        {/* Only show hero image after fetch completes to avoid flash of old/cached image */}
+        {heroDataReady && heroData && (
+          heroData.backgroundImage.startsWith('/images/') ? (
+            <picture className="absolute inset-0 block w-full h-full">
+              <source
+                media="(max-width: 768px)"
+                srcSet={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}&w=828&q=65`}
+              />
+              <img
+                src={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}`}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
+                fetchPriority="high"
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
+          ) : (
             <img
-              src={`/api/hero-image?url=${encodeURIComponent(heroData.backgroundImage)}`}
+              src={heroData.backgroundImage}
               alt=""
               className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
               fetchPriority="high"
               loading="eager"
               decoding="async"
             />
-          </picture>
-        ) : (
-          <img
-            src={heroData.backgroundImage}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover object-center bg-gray-900"
-            fetchPriority="high"
-            loading="eager"
-            decoding="async"
-          />
+          )
         )}
+        {/* Placeholder until data is ready — prevents showing stale/default image */}
+        {!heroDataReady && <div className="absolute inset-0 bg-gray-900" />}
 
         {/* Super Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-gray-900/90 to-black/98" />
@@ -219,10 +253,20 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent via-transparent to-black/10" />
       </div>
 
-      {/* Content: always show (heroData has defaults) to avoid CLS */}
+      {/* Content — only show after fetch to avoid flash of old text/buttons */}
       <div className="relative z-10 h-full flex items-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {isDesktop ? (
+          {!heroDataReady || !heroData ? (
+            <div className="max-w-7xl w-full space-y-6">
+              <div className="h-12 sm:h-14 w-3/4 max-w-2xl bg-white/20 rounded animate-pulse" />
+              <div className="h-5 w-full max-w-xl bg-white/15 rounded animate-pulse" />
+              <div className="h-5 w-4/5 max-w-lg bg-white/15 rounded animate-pulse" />
+              <div className="flex gap-4 mt-8">
+                <div className="h-12 w-32 bg-white/20 rounded animate-pulse" />
+                <div className="h-12 w-24 bg-white/20 rounded animate-pulse" />
+              </div>
+            </div>
+          ) : isDesktop ? (
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}

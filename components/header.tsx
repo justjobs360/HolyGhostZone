@@ -113,6 +113,7 @@ export function Header() {
                 className="h-14 sm:h-14 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
                 priority
                 sizes="(max-width: 1024px) 120px, 166px"
+                quality={75}
               />
             ) : (
               <div className="h-14 sm:h-14 lg:h-20 w-[120px] bg-gray-200/50 rounded animate-pulse" aria-hidden />
@@ -155,6 +156,7 @@ export function Header() {
                     className="h-6 sm:h-8 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
                     priority
                     sizes="(max-width: 640px) 80px, 128px"
+                    quality={75}
                   />
                 ) : (
                   <div className="h-6 sm:h-8 w-20 bg-gray-200/50 rounded animate-pulse" aria-hidden />

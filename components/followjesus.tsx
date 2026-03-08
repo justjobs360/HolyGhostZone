@@ -60,7 +60,10 @@ export default function FollowJesus() {
             alt="Practice the way of Jesus"
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 1342px"
+            sizes="(max-width: 768px) 100vw, 1400px"
+            quality={65}
+            loading="lazy"
+            fetchPriority="low"
           />
         ) : (
           <div className="absolute inset-0 bg-gray-800" />

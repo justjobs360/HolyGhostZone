@@ -70,7 +70,10 @@ export default function NewToTown() {
                 alt="New to Holy Ghost Zone"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, min(50vw, 720px)"
+                quality={70}
+                loading="lazy"
+                fetchPriority="low"
               />
             ) : (
               <div className="absolute inset-0 bg-gray-200 animate-pulse" />
