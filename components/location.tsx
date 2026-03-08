@@ -40,7 +40,7 @@ export function Location() {
   useEffect(() => {
     const loadPageData = async () => {
       try {
-        const response = await fetch('/api/pages/home');
+        const response = await fetch('/api/pages/home', { cache: 'no-store' });
         if (!response.ok) {
           console.error('Failed to load page data');
           return;

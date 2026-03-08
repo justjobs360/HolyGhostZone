@@ -65,26 +65,27 @@ export default function TeachingsPage() {
     ]
   })
 
+  const [pageDataReady, setPageDataReady] = useState(false)
+
   useEffect(() => {
     loadPageData();
   }, []);
 
   const loadPageData = async () => {
     try {
-      const response = await fetch('/api/pages/teachings');
+      const response = await fetch('/api/pages/teachings', { cache: 'no-store' });
       if (!response.ok) {
         console.error('Failed to load page data');
-        return;
-      }
-      const data = await response.json();
-      if (Object.keys(data).length > 0) {
-        setPageData(prevData => ({
-          ...prevData,
-          ...data
-        }));
+      } else {
+        const data = await response.json();
+        if (Object.keys(data).length > 0) {
+          setPageData(prevData => ({ ...prevData, ...data }));
+        }
       }
     } catch (error) {
       console.error('Error loading page data:', error);
+    } finally {
+      setPageDataReady(true);
     }
   };
 
@@ -95,19 +96,49 @@ export default function TeachingsPage() {
     <div className="min-h-screen">
       <Header />
       <main>
+        {!pageDataReady ? (
+          /* Skeleton — no text/images until fetch completes to avoid flash of old content */
+          <>
+            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
+              <div className="absolute inset-0 bg-gray-900" />
+              <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-gray-900/80 to-black/90" />
+              <div className="container mx-auto px-6 lg:px-8 relative z-10">
+                <div className="max-w-4xl mx-auto text-center space-y-4">
+                  <div className="h-12 w-3/4 mx-auto bg-white/20 rounded animate-pulse" />
+                  <div className="h-6 w-full max-w-2xl mx-auto bg-white/10 rounded animate-pulse" />
+                </div>
+              </div>
+            </section>
+            <section className="py-12"><div className="max-w-2xl mx-auto h-14 bg-gray-100 rounded animate-pulse" /></section>
+            <section className="py-20 lg:py-24">
+              <div className="container mx-auto px-6 lg:px-8">
+                <div className="grid lg:grid-cols-3 gap-8">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-72 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            </section>
+            <section className="py-24 lg:py-48 bg-gray-800" />
+            <section className="py-20 lg:py-24 bg-muted/30">
+              <div className="container mx-auto px-6 lg:px-8">
+                <div className="grid md:grid-cols-3 gap-8">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-64 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
+          <>
         {/* Hero Section */}
         <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
-          {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url('${pageData.hero.backgroundImage}')`
-            }}
+            style={{ backgroundImage: `url('${pageData.hero.backgroundImage}')` }}
           />
-          
-          {/* Very Dark Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-gray-900/80 to-black/90" />
-          
           <div className="container mx-auto px-6 lg:px-8 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="font-bold text-balance mb-8 leading-[0.9] tracking-tight text-white text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
@@ -154,12 +185,9 @@ export default function TeachingsPage() {
 
         {/* Philosophical Reflection */}
         <section className="relative py-24 lg:py-48 overflow-hidden">
-          {/* Background Image */}
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url('${pageData.reflection.backgroundImage}')`
-            }}
+            style={{ backgroundImage: `url('${pageData.reflection.backgroundImage}')` }}
           />
           
           {/* Dark Overlay */}
@@ -251,8 +279,8 @@ export default function TeachingsPage() {
             </div>
           </div>
         </section>
-
-       
+          </>
+        )}
       </main>
       <Footer />
     </div>

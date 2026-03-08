@@ -60,6 +60,8 @@ export default function EventsPage() {
     ]
   })
 
+  const [pageDataReady, setPageDataReady] = useState(false)
+
   useEffect(() => {
     loadPageData();
   }, []);
@@ -69,17 +71,16 @@ export default function EventsPage() {
       const response = await fetch('/api/pages/events', { cache: 'no-store' });
       if (!response.ok) {
         console.error('Failed to load page data');
-        return;
-      }
-      const data = await response.json();
-      if (Object.keys(data).length > 0) {
-        setPageData(prevData => ({
-          ...prevData,
-          ...data
-        }));
+      } else {
+        const data = await response.json();
+        if (Object.keys(data).length > 0) {
+          setPageData(prevData => ({ ...prevData, ...data }));
+        }
       }
     } catch (error) {
       console.error('Error loading page data:', error);
+    } finally {
+      setPageDataReady(true);
     }
   };
 
@@ -92,19 +93,52 @@ export default function EventsPage() {
     <div className="min-h-screen">
       <Header />
       <main>
+        {!pageDataReady ? (
+          /* Skeleton — no text/images until fetch completes to avoid flash of old content */
+          <>
+            <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
+              <div className="absolute inset-0 bg-gray-900" />
+              <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-gray-900/80 to-black/90" />
+              <div className="container mx-auto px-6 lg:px-8 relative z-10">
+                <div className="max-w-4xl mx-auto text-center space-y-4">
+                  <div className="h-12 w-3/4 mx-auto bg-white/20 rounded animate-pulse" />
+                  <div className="h-6 w-full max-w-2xl mx-auto bg-white/10 rounded animate-pulse" />
+                </div>
+              </div>
+            </section>
+            <section className="py-20 lg:py-24">
+              <div className="container mx-auto px-6 lg:px-8">
+                <div className="text-center mb-16 space-y-4">
+                  <div className="h-10 w-1/2 mx-auto bg-gray-200 rounded animate-pulse" />
+                  <div className="h-5 w-2/3 mx-auto bg-gray-100 rounded animate-pulse" />
+                </div>
+                <div className="grid lg:grid-cols-3 gap-8">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-80 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            </section>
+            <section className="py-24 lg:py-48 bg-gray-800" />
+            <section className="py-20 lg:py-24">
+              <div className="container mx-auto px-6 lg:px-8">
+                <div className="grid md:grid-cols-4 gap-8">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-48 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
+          <>
         {/* Hero Section */}
         <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
-          {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url('${pageData.hero.backgroundImage}')`
-            }}
+            style={{ backgroundImage: `url('${pageData.hero.backgroundImage}')` }}
           />
-
-          {/* Very Dark Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-gray-900/80 to-black/90" />
-
           <div className="container mx-auto px-6 lg:px-8 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="font-bold text-balance mb-8 leading-[0.9] tracking-tight text-white text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
@@ -136,18 +170,11 @@ export default function EventsPage() {
 
         {/* Philosophical Reflection */}
         <section className="relative py-24 lg:py-48 overflow-hidden">
-          {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url('${pageData.reflection.backgroundImage}')`
-            }}
+            style={{ backgroundImage: `url('${pageData.reflection.backgroundImage}')` }}
           />
-
-          {/* Dark Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-gray-900/60 to-black/80" />
-
-          {/* Content */}
           <div className="relative z-10 container mx-auto px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="font-bold text-balance leading-[0.9] tracking-tight text-white text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
@@ -156,7 +183,6 @@ export default function EventsPage() {
             </div>
           </div>
         </section>
-
 
         {/* Event Categories */}
         <section className="py-20 lg:py-24">
@@ -192,7 +218,8 @@ export default function EventsPage() {
             </div>
           </div>
         </section>
-
+          </>
+        )}
       </main>
       <Footer />
     </div>

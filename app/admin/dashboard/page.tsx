@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-context-base';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Home, Info, Calendar, BookOpen, Image, LogOut, User, Navigation, FileText } from 'lucide-react';
+import { Home, Info, Calendar, BookOpen, Image, LogOut, User, Navigation, FileText, Heart } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const { user, signOut } = useAuth();
@@ -81,6 +81,15 @@ export default function AdminDashboardPage() {
       color: 'from-indigo-500 to-indigo-600',
       bgColor: 'bg-indigo-50',
       iconColor: 'text-indigo-600',
+    },
+    {
+      id: 'follow-jesus',
+      title: 'Follow Jesus',
+      icon: Heart,
+      description: 'Edit the Follow Jesus page (/follow-jesus): steps and content',
+      color: 'from-rose-500 to-rose-600',
+      bgColor: 'bg-rose-50',
+      iconColor: 'text-rose-600',
     },
   ];
 
@@ -180,7 +189,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Total Pages</p>
-                <p className="text-3xl font-bold text-gray-900">7</p>
+                <p className="text-3xl font-bold text-gray-900">8</p>
               </div>
               <div className="w-12 h-12 bg-blue-50 flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-blue-600" />

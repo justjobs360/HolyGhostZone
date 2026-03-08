@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getAdminDb } from '@/lib/firebase-admin';
+
+export async function GET() {
+  try {
+    const hasCreds = Boolean(
+      process.env.FIREBASE_PROJECT_ID &&
+      process.env.FIREBASE_CLIENT_EMAIL &&
+      process.env.FIREBASE_PRIVATE_KEY
+    );
+
+    if (!hasCreds) {
+      return NextResponse.json({}, {
+        status: 200,
+        headers: { 'x-warning': 'Missing Firebase Admin credentials' },
+      });
+    }
+
+    const db = await getAdminDb();
+    const snap = await db.collection('pages').doc('followJesus').get();
+
+    if (!snap.exists) {
+      return NextResponse.json({}, { status: 200 });
+    }
+    return NextResponse.json(snap.data() || {}, { status: 200 });
+  } catch (e: unknown) {
+    const err = e as Error;
+    console.error('GET /api/admin/pages/follow-jesus error:', err);
+    return NextResponse.json(
+      { error: 'Failed to load', detail: String(err?.message || err) },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const hasCreds = Boolean(
+      process.env.FIREBASE_PROJECT_ID &&
+      process.env.FIREBASE_CLIENT_EMAIL &&
+      process.env.FIREBASE_PRIVATE_KEY
+    );
+
+    if (!hasCreds) {
+      return NextResponse.json(
+        { error: 'Missing Firebase Admin credentials' },
+        { status: 500 }
+      );
+    }
+
+    const db = await getAdminDb();
+    const body = await req.json();
+    await db.collection('pages').doc('followJesus').set(body, { merge: true });
+
+    return NextResponse.json({ ok: true }, { status: 200 });
+  } catch (e: unknown) {
+    const err = e as Error;
+    console.error('POST /api/admin/pages/follow-jesus error:', err);
+    return NextResponse.json(
+      { error: 'Failed to save', detail: String(err?.message || err) },
+      { status: 500 }
+    );
+  }
+}

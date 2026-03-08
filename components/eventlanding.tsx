@@ -40,6 +40,7 @@ export function EventLanding() {
     buttonText?: string;
     buttonLink?: string;
   }> | null>(null)
+  const [eventsDataReady, setEventsDataReady] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -56,9 +57,9 @@ export function EventLanding() {
   useEffect(() => {
     const loadPageData = async () => {
       try {
-        // Fetch events data from the events page API
-        const eventsResponse = await fetch('/api/pages/events');
-        const homeResponse = await fetch('/api/pages/home');
+        // Fetch events data from the events page API — no-store to avoid stale cache
+        const eventsResponse = await fetch('/api/pages/events', { cache: 'no-store' });
+        const homeResponse = await fetch('/api/pages/home', { cache: 'no-store' });
 
         if (eventsResponse.ok) {
           const eventsData = await eventsResponse.json();
@@ -94,6 +95,8 @@ export function EventLanding() {
         }
       } catch (error) {
         console.error('Error loading page data:', error);
+      } finally {
+        setEventsDataReady(true);
       }
     };
 
@@ -151,7 +154,8 @@ export function EventLanding() {
       : isTablet
         ? (eventsData.cardsPerView?.tablet ?? 2)
         : (eventsData.cardsPerView?.desktop ?? 3)
-    const list = eventsList && eventsList.length > 0 ? eventsList : fallbackEvents
+    // Only use API/fallback list after fetch to avoid showing fallback images briefly
+    const list = !eventsDataReady ? [] : (eventsList && eventsList.length > 0 ? eventsList : fallbackEvents)
     return list.slice(currentEvent, currentEvent + cards)
   }
 
@@ -163,7 +167,7 @@ export function EventLanding() {
       : isTablet
         ? (eventsData.cardsPerView?.tablet ?? 2)
         : (eventsData.cardsPerView?.desktop ?? 3)
-    const listLength = (eventsList && eventsList.length > 0 ? eventsList : fallbackEvents).length
+    const listLength = !eventsDataReady ? 0 : (eventsList && eventsList.length > 0 ? eventsList : fallbackEvents).length
     return Math.max(0, listLength - cards)
   }
 
@@ -193,15 +197,24 @@ export function EventLanding() {
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-gray-900/80" />
 
-      {/* Content */}
+      {/* Content — only show title/subtitle after fetch to avoid flash of old text */}
       <div className="relative z-10 container mx-auto px-4">
         <div className="text-center mb-6">
-          <h2 className="font-bold text-white mb-3" style={{ fontSize: 'clamp(2rem, 5.5vw, 4rem)' }}>
-            {eventsData.title}
-          </h2>
-          <p className="text-gray-300 max-w-2xl mx-auto" style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1.125rem)' }}>
-            Join us for worship, fellowship, and spiritual growth.
-          </p>
+          {eventsDataReady ? (
+            <>
+              <h2 className="font-bold text-white mb-3" style={{ fontSize: 'clamp(2rem, 5.5vw, 4rem)' }}>
+                {eventsData.title}
+              </h2>
+              <p className="text-gray-300 max-w-2xl mx-auto" style={{ fontSize: 'clamp(0.875rem, 1.5vw, 1.125rem)' }}>
+                Join us for worship, fellowship, and spiritual growth.
+              </p>
+            </>
+          ) : (
+            <div className="max-w-2xl mx-auto space-y-3">
+              <div className="h-10 w-48 mx-auto bg-white/20 rounded animate-pulse" />
+              <div className="h-5 w-full bg-white/10 rounded animate-pulse" />
+            </div>
+          )}
         </div>
 
         {/* Carousel */}
@@ -215,9 +228,20 @@ export function EventLanding() {
               <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
-            {/* Event Cards Grid */}
+            {/* Event Cards Grid — only show after fetch to avoid flash of old/fallback images */}
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {getVisibleEvents().map((event, index) => (
+              {!eventsDataReady ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <Card key={i} className="bg-white/10 backdrop-blur-sm border-white/20 p-0 flex flex-col h-full">
+                    <CardContent className="p-4 flex flex-col flex-grow">
+                      <div className="aspect-[4/3] rounded-lg bg-white/10 animate-pulse mb-3" />
+                      <div className="h-6 bg-white/10 rounded w-3/4 mb-2 animate-pulse" />
+                      <div className="h-4 bg-white/10 rounded w-1/2 animate-pulse" />
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+              getVisibleEvents().map((event, index) => (
                 <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300 p-0 flex flex-col h-full">
                   <CardContent className="p-4 flex flex-col flex-grow">
                     {/* Event Image - Clickable for Zoom events */}
@@ -279,7 +303,8 @@ export function EventLanding() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              ))
+              )}
             </div>
 
             {/* Right Navigation Arrow */}

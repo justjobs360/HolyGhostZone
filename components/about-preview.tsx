@@ -63,30 +63,26 @@ export function AboutPreview() {
     buttonLink: "/events"
   });
 
+  const [homeDataReady, setHomeDataReady] = useState(false);
+
   useEffect(() => {
     const loadPageData = async () => {
       try {
-        const response = await fetch('/api/pages/home');
+        const response = await fetch('/api/pages/home', { cache: 'no-store' });
         if (!response.ok) {
           console.error('Failed to load page data');
-          return;
-        }
-        const data = await response.json();
-        
-        if (data.whoWeAre) {
-          setWhoWeAreData(data.whoWeAre);
-        }
-        if (data.whatWeBelieve) {
-          setWhatWeBelieveData(data.whatWeBelieve);
-        }
-        if (data.ourServices) {
-          setOurServicesData(data.ourServices);
+        } else {
+          const data = await response.json();
+          if (data.whoWeAre) setWhoWeAreData(data.whoWeAre);
+          if (data.whatWeBelieve) setWhatWeBelieveData(data.whatWeBelieve);
+          if (data.ourServices) setOurServicesData(data.ourServices);
         }
       } catch (error) {
         console.error('Error loading page data:', error);
+      } finally {
+        setHomeDataReady(true);
       }
     };
-
     loadPageData();
   }, []);
 
@@ -130,6 +126,33 @@ export function AboutPreview() {
     },
   ]
 
+  if (!homeDataReady) {
+    /* Skeleton — no text/images until fetch completes to avoid flash of old content */
+    return (
+      <div id="about">
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2 aspect-[2/1] bg-gray-200 rounded-lg animate-pulse" />
+                <div className="aspect-square bg-gray-200 rounded-lg animate-pulse" />
+                <div className="aspect-square bg-gray-200 rounded-lg animate-pulse" />
+              </div>
+              <div className="space-y-4">
+                <div className="h-8 w-1/3 bg-gray-200 rounded animate-pulse" />
+                <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="py-16 md:py-24">
+          <div className="h-96 bg-gray-200 animate-pulse" />
+        </section>
+      </div>
+    )
+  }
+
   return (
     <div id="about">
       {sections.map((section, index) => {
@@ -139,34 +162,46 @@ export function AboutPreview() {
             <section key={index} className="py-12 md:py-20 bg-white">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
-                  {/* Left Column - Image Grid */}
+                  {/* Left Column - Image Grid — only show after fetch to avoid flash of old images */}
                   <div className="grid grid-cols-2 gap-3 md:gap-4">
                     <div className="col-span-2 aspect-[2/1] rounded-lg overflow-hidden relative">
-                      <Image
-                        src={whoWeAreData.images[0] || "/images/rccg.JPG"}
-                        alt="RCCG Church"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
+                      {homeDataReady ? (
+                        <Image
+                          src={whoWeAreData.images[0] || "/images/rccg.JPG"}
+                          alt="RCCG Church"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                      )}
                     </div>
                     <div className="aspect-square rounded-lg overflow-hidden relative">
-                      <Image
-                        src={whoWeAreData.images[1] || "/images/2hgz.JPG"}
-                        alt="Community service"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 50vw, 25vw"
-                      />
+                      {homeDataReady ? (
+                        <Image
+                          src={whoWeAreData.images[1] || "/images/2hgz.JPG"}
+                          alt="Community service"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                      )}
                     </div>
                     <div className="aspect-square rounded-lg overflow-hidden relative">
-                      <Image
-                        src={whoWeAreData.images[2] || "/images/3hgz.png"}
-                        alt="Pastor preaching"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 50vw, 25vw"
-                      />
+                      {homeDataReady ? (
+                        <Image
+                          src={whoWeAreData.images[2] || "/images/3hgz.png"}
+                          alt="Pastor preaching"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                      )}
                     </div>
                   </div>
 
@@ -243,15 +278,19 @@ export function AboutPreview() {
                      </Link>
                    </div>
 
-                   {/* Right Column - Image */}
+                   {/* Right Column - Image — only show after fetch to avoid flash of old image */}
                    <div className="aspect-[4/3] relative rounded-lg overflow-hidden">
-                     <Image
-                       src={ourServicesData.backgroundImage}
-                       alt="Church service"
-                       fill
-                       className="object-cover"
-                       sizes="(max-width: 1024px) 100vw, 50vw"
-                     />
+                     {homeDataReady ? (
+                       <Image
+                         src={ourServicesData.backgroundImage}
+                         alt="Church service"
+                         fill
+                         className="object-cover"
+                         sizes="(max-width: 1024px) 100vw, 50vw"
+                       />
+                     ) : (
+                       <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                     )}
                    </div>
                  </div>
                </div>
@@ -264,9 +303,13 @@ export function AboutPreview() {
            return (
              <div key={index}>
                <section className="relative min-h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden py-16 md:py-0">
-                 {/* Background Image */}
+                 {/* Background Image — only show after fetch to avoid flash of old image */}
                  <div className="absolute inset-0 relative">
-                   <Image src={section.backgroundImage} alt="" fill className="object-cover object-center" sizes="100vw" />
+                   {homeDataReady ? (
+                     <Image src={section.backgroundImage} alt="" fill className="object-cover object-center" sizes="100vw" />
+                   ) : (
+                     <div className="absolute inset-0 bg-gray-800" />
+                   )}
                  </div>
                  
                  {/* Dark Overlay */}
@@ -300,9 +343,13 @@ export function AboutPreview() {
          // Default layout for other sections
          return (
            <section key={index} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-             {/* Background Image */}
+             {/* Background Image — only show after fetch to avoid flash of old image */}
              <div className="absolute inset-0 relative">
-               <Image src={section.backgroundImage} alt="" fill className="object-cover object-center" sizes="100vw" />
+               {homeDataReady ? (
+                 <Image src={section.backgroundImage} alt="" fill className="object-cover object-center" sizes="100vw" />
+               ) : (
+                 <div className="absolute inset-0 bg-gray-800" />
+               )}
              </div>
              
              {/* Dark Overlay */}

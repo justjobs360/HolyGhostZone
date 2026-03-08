@@ -23,33 +23,67 @@ export function Header() {
     setIsMenuOpen(!isMenuOpen)
   }
 
-  const [headerData, setHeaderData] = useState({
-    mainLogo: '/images/holy-ghost-zone-logo.png',
-    affiliateLogo: '/images/affchurch.avif',
-    affiliateLink: 'https://www.rccg.org/',
-    navItems: [
-      { href: "/", label: "Home", visible: true },
-      { href: "/about", label: "About", visible: true },
-      { href: "/events", label: "Events", visible: true },
-      { href: "/teachings", label: "Teachings", visible: true },
-      { href: "/gallery", label: "Gallery", visible: true },
-    ],
-  })
+  const [headerData, setHeaderData] = useState<{
+    mainLogo: string
+    affiliateLogo: string
+    affiliateLink: string
+    navItems: { href: string; label: string; visible: boolean }[]
+  } | null>(null)
+  const [headerDataReady, setHeaderDataReady] = useState(false)
 
   useEffect(() => {
     const loadHeaderData = async () => {
       try {
-        const response = await fetch('/api/pages/header');
+        const response = await fetch('/api/pages/header', { cache: 'no-store' });
         if (!response.ok) {
           console.error('Failed to load header data');
-          return;
-        }
-        const data = await response.json();
-        if (Object.keys(data).length > 0) {
-          setHeaderData(data);
+          setHeaderData({
+            mainLogo: '/images/holy-ghost-zone-logo.png',
+            affiliateLogo: '/images/affchurch.avif',
+            affiliateLink: 'https://www.rccg.org/',
+            navItems: [
+              { href: "/", label: "Home", visible: true },
+              { href: "/about", label: "About", visible: true },
+              { href: "/events", label: "Events", visible: true },
+              { href: "/teachings", label: "Teachings", visible: true },
+              { href: "/gallery", label: "Gallery", visible: true },
+            ],
+          });
+        } else {
+          const data = await response.json();
+          if (Object.keys(data).length > 0) {
+            setHeaderData(data);
+          } else {
+            setHeaderData({
+              mainLogo: '/images/holy-ghost-zone-logo.png',
+              affiliateLogo: '/images/affchurch.avif',
+              affiliateLink: 'https://www.rccg.org/',
+              navItems: [
+                { href: "/", label: "Home", visible: true },
+                { href: "/about", label: "About", visible: true },
+                { href: "/events", label: "Events", visible: true },
+                { href: "/teachings", label: "Teachings", visible: true },
+                { href: "/gallery", label: "Gallery", visible: true },
+              ],
+            });
+          }
         }
       } catch (error) {
         console.error('Error loading header data:', error);
+        setHeaderData({
+          mainLogo: '/images/holy-ghost-zone-logo.png',
+          affiliateLogo: '/images/affchurch.avif',
+          affiliateLink: 'https://www.rccg.org/',
+          navItems: [
+            { href: "/", label: "Home", visible: true },
+            { href: "/about", label: "About", visible: true },
+            { href: "/events", label: "Events", visible: true },
+            { href: "/teachings", label: "Teachings", visible: true },
+            { href: "/gallery", label: "Gallery", visible: true },
+          ],
+        });
+      } finally {
+        setHeaderDataReady(true);
       }
     };
 
@@ -64,26 +98,30 @@ export function Header() {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
-          {/* Main Logo - Left Side */}
+          {/* Main Logo - Left Side — only show image after fetch to avoid flash of old logo */}
           <Link
             href="/"
             className="flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105 group"
             aria-label="Holy Ghost Zone MK Homepage"
           >
-            <Image
-              src={headerData.mainLogo}
-              alt="Holy Ghost Zone MK"
-              width={120}
-              height={40}
-              className="h-14 sm:h-14 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
-              priority
-              sizes="(max-width: 1024px) 120px, 166px"
-            />
+            {headerDataReady && headerData ? (
+              <Image
+                src={headerData.mainLogo}
+                alt="Holy Ghost Zone MK"
+                width={120}
+                height={40}
+                className="h-14 sm:h-14 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
+                priority
+                sizes="(max-width: 1024px) 120px, 166px"
+              />
+            ) : (
+              <div className="h-14 sm:h-14 lg:h-20 w-[120px] bg-gray-200/50 rounded animate-pulse" aria-hidden />
+            )}
           </Link>
 
-          {/* Desktop Navigation - Center */}
+          {/* Desktop Navigation - Center — only show after fetch to avoid flash of old content */}
           <nav className="hidden lg:flex items-center space-x-8 xl:space-x-12">
-            {headerData.navItems.filter(item => item.visible !== false).map((item) => (
+            {(headerData?.navItems ?? []).filter(item => item.visible !== false).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -100,23 +138,29 @@ export function Header() {
           {/* Right Side - Affiliate Logo and Mobile Menu */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Affiliate Logo - Hidden on very small screens, visible on sm and up */}
-            <Link
-              href={headerData.affiliateLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105 group"
-              aria-label="Visit Affiliated Church"
-            >
-              <Image
-                src={headerData.affiliateLogo}
-                alt="Affiliated Church"
-                width={100}
-                height={32}
-                className="h-6 sm:h-8 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
-                priority
-                sizes="(max-width: 640px) 80px, 128px"
-              />
-            </Link>
+            {headerData && (
+              <Link
+                href={headerData.affiliateLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105 group"
+                aria-label="Visit Affiliated Church"
+              >
+                {headerDataReady ? (
+                  <Image
+                    src={headerData.affiliateLogo}
+                    alt="Affiliated Church"
+                    width={100}
+                    height={32}
+                    className="h-6 sm:h-8 lg:h-20 w-auto group-hover:drop-shadow-lg transition-all duration-300"
+                    priority
+                    sizes="(max-width: 640px) 80px, 128px"
+                  />
+                ) : (
+                  <div className="h-6 sm:h-8 w-20 bg-gray-200/50 rounded animate-pulse" aria-hidden />
+                )}
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <Button
@@ -143,13 +187,17 @@ export function Header() {
                   className="flex items-center hover:opacity-80 transition-all duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Image
-                    src={headerData.mainLogo}
-                    alt="Holy Ghost Zone MK"
-                    width={120}
-                    height={40}
-                    className="h-16 w-auto"
-                  />
+                  {headerDataReady && headerData ? (
+                    <Image
+                      src={headerData.mainLogo}
+                      alt="Holy Ghost Zone MK"
+                      width={120}
+                      height={40}
+                      className="h-16 w-auto"
+                    />
+                  ) : (
+                    <div className="h-16 w-[120px] bg-gray-200/50 rounded animate-pulse" aria-hidden />
+                  )}
                 </Link>
                 <Button
                   variant="ghost"
@@ -165,7 +213,7 @@ export function Header() {
               {/* Navigation Links */}
               <nav className="px-4 py-6">
                 <div className="flex flex-col space-y-1">
-                  {headerData.navItems.filter(item => item.visible !== false).map((item, index) => (
+                  {(headerData?.navItems ?? []).filter(item => item.visible !== false).map((item, index) => (
                     <Link
                       key={item.href}
                       href={item.href}
@@ -182,22 +230,28 @@ export function Header() {
                 <div className="mt-8 pt-6 border-t border-gray-200/20">
                   <div className="flex flex-col space-y-3">
                     <span className="text-sm text-gray-600 font-medium px-4">Partner Church</span>
-                    <Link
-                      href={headerData.affiliateLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-200 group"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Image
-                        src={headerData.affiliateLogo}
-                        alt="Affiliated Church"
-                        width={60}
-                        height={20}
-                        className="h-5 w-auto group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <span className="text-sm font-medium text-primary">Visit RCCG Website</span>
-                    </Link>
+                    {headerData && (
+                      <Link
+                        href={headerData.affiliateLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 rounded-lg transition-all duration-200 group"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {headerDataReady ? (
+                          <Image
+                            src={headerData.affiliateLogo}
+                            alt="Affiliated Church"
+                            width={60}
+                            height={20}
+                            className="h-5 w-auto group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="h-5 w-12 bg-gray-200/50 rounded animate-pulse" aria-hidden />
+                        )}
+                        <span className="text-sm font-medium text-primary">Visit RCCG Website</span>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </nav>

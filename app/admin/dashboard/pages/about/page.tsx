@@ -34,6 +34,12 @@ export default function AboutPageEditor() {
       title: 'What If You Belong Here?',
       backgroundImage: '/images/shakespear.jpg'
     },
+    ourBeliefs: {
+      visible: true,
+      title: 'Our Beliefs',
+      subtitle: '',
+      items: Array.from({ length: 13 }, (_, i) => ({ title: `Belief ${i + 1}`, content: '' }))
+    },
     values: {
       title: 'Our Core Values',
       subtitle: 'These values guide everything we do as a community of faith',
@@ -47,32 +53,6 @@ export default function AboutPageEditor() {
     },
     reflection2: {
       backgroundImage: '/images/aboutus3.jpg'
-    },
-    leadership: {
-      title: 'Our Leadership Team',
-      subtitle: 'Passionate leaders committed to serving our community with integrity and love',
-      teams: [
-        {
-          title: 'Senior Leadership',
-          description: 'Our senior pastors and executive team who provide spiritual guidance and overall church direction.'
-        },
-        {
-          title: 'Ministry Directors',
-          description: 'Leaders who oversee specific ministries including worship, youth, children, and community outreach.'
-        },
-        {
-          title: 'Elders & Deacons',
-          description: 'Spiritual leaders who provide pastoral care, counseling, and support to our church family.'
-        },
-        {
-          title: 'Volunteer Coordinators',
-          description: 'Dedicated volunteers who organize events, manage programs, and ensure smooth church operations.'
-        },
-        {
-          title: 'Administrative Team',
-          description: 'Support staff who handle church administration, communications, and day-to-day operations.'
-        }
-      ]
     }
   });
 
@@ -86,10 +66,16 @@ export default function AboutPageEditor() {
       const res = await fetch('/api/admin/pages/about', { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
-      setPageData(prevData => ({
-        ...prevData,
-        ...data
-      }));
+      setPageData(prevData => {
+        const next = { ...prevData, ...data };
+        if (next.ourBeliefs && !(next.ourBeliefs.items?.length) && next.ourBeliefs.content) {
+          next.ourBeliefs = { ...next.ourBeliefs, items: [{ title: next.ourBeliefs.title || 'Our Beliefs', content: next.ourBeliefs.content }] };
+        }
+        if (next.ourBeliefs && !Array.isArray(next.ourBeliefs.items)) {
+          next.ourBeliefs = { ...next.ourBeliefs, items: Array.from({ length: 13 }, (_, i) => ({ title: `Belief ${i + 1}`, content: '' })) };
+        }
+        return next;
+      });
     } catch (error) {
       console.error('Error loading page data:', error);
     } finally {
@@ -182,14 +168,14 @@ export default function AboutPageEditor() {
                 <a href="#reflection-section" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-200">
                   Reflection Section
                 </a>
+                <a href="#our-beliefs-section" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-200">
+                  Our Beliefs
+                </a>
                 <a href="#values-section" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-200">
                   Values Section
                 </a>
                 <a href="#reflection2-section" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-200">
                   Reflection 2
-                </a>
-                <a href="#leadership-section" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-200">
-                  Leadership Team
                 </a>
               </nav>
             </div>
@@ -386,6 +372,121 @@ export default function AboutPageEditor() {
               </div>
             </div>
 
+            {/* Our Beliefs Section — same dropdown style as former Leadership */}
+            <div id="our-beliefs-section" className="bg-white border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-amber-50 flex items-center justify-center">
+                  <Type className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Our Beliefs</h3>
+                  <p className="text-sm text-gray-500">Section title and dropdown items. Add or remove beliefs; each has a title and content.</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={pageData.ourBeliefs?.visible !== false}
+                    onChange={(e) => setPageData({
+                      ...pageData,
+                      ourBeliefs: { ...pageData.ourBeliefs, visible: e.target.checked }
+                    })}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Show section on About page</span>
+                </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Section title</label>
+                  <Input
+                    value={pageData.ourBeliefs?.title ?? 'Our Beliefs'}
+                    onChange={(e) => setPageData({
+                      ...pageData,
+                      ourBeliefs: { ...pageData.ourBeliefs, title: e.target.value }
+                    })}
+                    placeholder="Our Beliefs"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle (optional)</label>
+                  <Input
+                    value={pageData.ourBeliefs?.subtitle ?? ''}
+                    onChange={(e) => setPageData({
+                      ...pageData,
+                      ourBeliefs: { ...pageData.ourBeliefs, subtitle: e.target.value }
+                    })}
+                    placeholder="e.g. What we believe as a church"
+                    className="w-full"
+                  />
+                </div>
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-sm font-semibold text-gray-900">Beliefs (each = one dropdown on the page)</h4>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPageData({
+                        ...pageData,
+                        ourBeliefs: {
+                          ...pageData.ourBeliefs,
+                          items: [...(pageData.ourBeliefs?.items ?? []), { title: '', content: '' }]
+                        }
+                      })}
+                    >
+                      Add belief
+                    </Button>
+                  </div>
+                  {(pageData.ourBeliefs?.items ?? []).map((belief, index) => (
+                    <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0 last:pb-0 last:mb-0">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-sm font-medium text-gray-500">Belief {index + 1}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => {
+                            const items = (pageData.ourBeliefs?.items ?? []).filter((_, i) => i !== index);
+                            setPageData({
+                              ...pageData,
+                              ourBeliefs: { ...pageData.ourBeliefs, items }
+                            });
+                          }}
+                          disabled={(pageData.ourBeliefs?.items?.length ?? 0) <= 1}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                      <Input
+                        value={belief.title}
+                        onChange={(e) => {
+                          const items = [...(pageData.ourBeliefs?.items ?? [])];
+                          items[index] = { ...belief, title: e.target.value };
+                          setPageData({ ...pageData, ourBeliefs: { ...pageData.ourBeliefs, items } });
+                        }}
+                        placeholder="Belief title"
+                        className="w-full mb-3"
+                      />
+                      <Textarea
+                        value={belief.content}
+                        onChange={(e) => {
+                          const items = [...(pageData.ourBeliefs?.items ?? [])];
+                          items[index] = { ...belief, content: e.target.value };
+                          setPageData({ ...pageData, ourBeliefs: { ...pageData.ourBeliefs, items } });
+                        }}
+                        placeholder="Content (shown when dropdown is open)"
+                        rows={3}
+                        className="w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Values Section */}
             <div id="values-section" className="bg-white border border-gray-200 p-6">
               <div className="flex items-center gap-3 mb-6">
@@ -484,83 +585,6 @@ export default function AboutPageEditor() {
               </div>
             </div>
 
-            {/* Leadership Section */}
-            <div id="leadership-section" className="bg-white border border-gray-200 p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-teal-50 flex items-center justify-center">
-                  <Type className="w-5 h-5 text-teal-600" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Leadership Team Section</h3>
-                  <p className="text-sm text-gray-500">Team leadership information</p>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title
-                  </label>
-                  <Input
-                    value={pageData.leadership.title}
-                    onChange={(e) => setPageData({ ...pageData, leadership: { ...pageData.leadership, title: e.target.value }})}
-                    placeholder="Enter section title"
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subtitle
-                  </label>
-                  <Input
-                    value={pageData.leadership.subtitle}
-                    onChange={(e) => setPageData({ ...pageData, leadership: { ...pageData.leadership, subtitle: e.target.value }})}
-                    placeholder="Enter subtitle"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="border-t border-gray-200 pt-6">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-4">Leadership Teams</h4>
-                  {pageData.leadership.teams.map((team, index) => (
-                    <div key={index} className="mb-6 pb-6 border-b border-gray-200 last:border-b-0">
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Team {index + 1} Title
-                        </label>
-                        <Input
-                          value={team.title}
-                          onChange={(e) => {
-                            const newTeams = [...pageData.leadership.teams];
-                            newTeams[index] = { ...team, title: e.target.value };
-                            setPageData({ ...pageData, leadership: { ...pageData.leadership, teams: newTeams }});
-                          }}
-                          placeholder="Team title"
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Description
-                        </label>
-                        <Textarea
-                          value={team.description}
-                          onChange={(e) => {
-                            const newTeams = [...pageData.leadership.teams];
-                            newTeams[index] = { ...team, description: e.target.value };
-                            setPageData({ ...pageData, leadership: { ...pageData.leadership, teams: newTeams }});
-                          }}
-                          placeholder="Team description"
-                          rows={2}
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>

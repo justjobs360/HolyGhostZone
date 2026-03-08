@@ -8,15 +8,10 @@ import { useState, useEffect } from "react"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
-  const [footerData, setFooterData] = useState({
+  const defaultFooterData = {
     logo: '/images/holy-ghost-zone-logo.png',
     description: 'We are a community based church with a keen interest in impacting our community through transformational Christ-centered activities and programs.',
-    socialMedia: {
-      facebook: '',
-      instagram: '',
-      youtube: '',
-      twitter: '',
-    },
+    socialMedia: { facebook: '', instagram: '', youtube: '', twitter: '' },
     quickLinks: [
       { label: 'Home', href: '/' },
       { label: 'About Us', href: '/about' },
@@ -34,38 +29,70 @@ export function Footer() {
       email: 'info@holyghostzonemk.org',
     },
     copyright: 'Holy Ghost Zone MK. All rights reserved.',
-    developerCredit: {
-      text: 'Developed by',
-      link: 'https://www.sillylittletools.com',
-      linkText: 'SillyLittleTools',
-    },
-  })
+    developerCredit: { text: 'Developed by', link: 'https://www.sillylittletools.com', linkText: 'SillyLittleTools' },
+  }
+  const [footerData, setFooterData] = useState<typeof defaultFooterData | null>(null)
+  const [footerDataReady, setFooterDataReady] = useState(false)
 
   useEffect(() => {
     const loadFooterData = async () => {
       try {
-        const response = await fetch('/api/pages/footer');
+        const response = await fetch('/api/pages/footer', { cache: 'no-store' });
         if (!response.ok) {
-          console.error('Failed to load footer data');
-          return;
-        }
-        const data = await response.json();
-        if (Object.keys(data).length > 0) {
-          setFooterData(data);
+          setFooterData(defaultFooterData);
+        } else {
+          const data = await response.json();
+          setFooterData(Object.keys(data).length > 0 ? data : defaultFooterData);
         }
       } catch (error) {
         console.error('Error loading footer data:', error);
+        setFooterData(defaultFooterData);
+      } finally {
+        setFooterDataReady(true);
       }
     };
-
     loadFooterData();
   }, []);
 
   return (
     <footer className="bg-slate-900 text-white">
-      {/* Main Footer Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          {!footerDataReady ? (
+            /* Skeleton — no text/images until fetch completes to avoid flash of old content */
+            <>
+              <div className="space-y-4">
+                <div className="h-12 w-40 bg-gray-700/50 rounded animate-pulse" />
+                <div className="h-4 w-full bg-gray-700/40 rounded animate-pulse" />
+                <div className="h-4 w-full bg-gray-700/40 rounded animate-pulse" />
+              </div>
+              <div className="space-y-4">
+                <div className="h-5 w-24 bg-gray-700/50 rounded animate-pulse" />
+                <div className="space-y-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-4 w-20 bg-gray-700/40 rounded animate-pulse" />
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="h-5 w-28 bg-gray-700/50 rounded animate-pulse" />
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-4 w-32 bg-gray-700/40 rounded animate-pulse" />
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="h-5 w-24 bg-gray-700/50 rounded animate-pulse" />
+                <div className="space-y-2">
+                  <div className="h-4 w-full bg-gray-700/40 rounded animate-pulse" />
+                  <div className="h-4 w-28 bg-gray-700/40 rounded animate-pulse" />
+                  <div className="h-4 w-36 bg-gray-700/40 rounded animate-pulse" />
+                </div>
+              </div>
+            </>
+          ) : footerData ? (
+            <>
           {/* Church Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center mb-4 md:mb-6">
@@ -77,7 +104,6 @@ export function Footer() {
                 className="mr-3 w-40 md:w-48 lg:w-52 h-auto"
                 sizes="(max-width: 768px) 160px, 208px"
               />
-              
             </div>
             <p className="text-sm md:text-base text-gray-300 mb-4 md:mb-6 text-pretty">
               {footerData.description}
@@ -168,8 +194,13 @@ export function Footer() {
           </div>
         </div>
       </div>
+            </>
+          ) : null}
+        </div>
+      </div>
 
-      {/* Bottom Bar */}
+      {/* Bottom Bar — only show when data ready */}
+      {footerDataReady && footerData && (
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
@@ -187,6 +218,7 @@ export function Footer() {
           </div>
         </div>
       </div>
+      )}
     </footer>
   )
 }
