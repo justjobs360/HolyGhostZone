@@ -34,7 +34,21 @@ export default function AboutPage() {
       visible: true,
       title: 'Our Beliefs',
       subtitle: '',
-      items: Array.from({ length: 13 }, (_, i) => ({ title: `Belief ${i + 1}`, content: '' }))
+      items: [
+        { title: 'The Bible', content: 'We believe the Bible is the inspired, infallible and unchangeable Word of God, the final authority for faith and life (II Tim. 3:16-17; Ps. 119:105).' },
+        { title: 'One God', content: 'We believe in one God – Father, Son and Holy Spirit – three distinct Persons, yet one God, Creator of all things (Gen. 1:1; Matt. 28:19).' },
+        { title: 'Jesus Christ', content: 'We believe in Jesus Christ, the eternal Son of God, born of the Virgin Mary, who died for our sins and rose again (John 1:1-14; Is. 53:5; I Cor. 15:3).' },
+        { title: 'The Holy Spirit', content: 'We believe in the Holy Spirit, who regenerates, sanctifies and empowers believers for holy living (John 14:16-17; Acts 1:8).' },
+        { title: 'Salvation', content: "We believe all people are created in God's image but need salvation through repentance and faith in Christ (Gen. 1:26; John 3:3-5)." },
+        { title: 'Water baptism', content: 'We believe in water baptism by immersion as testimony of new life in Christ (Matt. 28:19; Rom. 6:4).' },
+        { title: 'Baptism of the Holy Spirit', content: 'We believe in the baptism of the Holy Spirit with the sign of speaking in tongues (Acts 2:4; Acts 19:6).' },
+        { title: 'Prayer and holiness', content: 'We believe in a life of prayer, holiness and obedience to God and godly authority (I Thess. 5:17; I Pet. 1:16).' },
+        { title: 'Divine healing', content: "We believe in divine healing through Christ's atonement, prayed for with laying on of hands (Is. 53:4-5; James 5:14)." },
+        { title: 'Marriage and family', content: "We believe in one man, one woman marriage, honourable in all, and dedication of children (Heb. 13:4; Matt. 19:4-6)." },
+        { title: "Lord's Supper", content: "We believe in regular Lord's Supper in remembrance of Christ (I Cor. 11:23-26)." },
+        { title: 'The Church', content: "We believe the Church is Christ's body, called to worship, grow and evangelise (Eph. 1:22-23; Matt. 28:19)." },
+        { title: "Christ's return", content: "We believe in Christ's Second Coming, resurrection, judgement and eternal life (Acts 1:11; Rev. 20:11-15)." }
+      ]
     },
     values: {
       title: 'Our Core Values',
