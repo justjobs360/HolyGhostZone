@@ -298,10 +298,16 @@ export function AboutPreview() {
            )
          }
 
-         // Special layout for "What We Believe" section
-         if (section.title === "What We Believe") {
-           return (
-             <div key={index}>
+        // Special layout for "What We Believe" section
+        if (section.title === "What We Believe") {
+          // Ensure the button always goes to the Our Beliefs section on the About page
+          const whatWeBelieveHref =
+            whatWeBelieveData.buttonLink && whatWeBelieveData.buttonLink.startsWith("/about")
+              ? "/about#our-beliefs"
+              : (whatWeBelieveData.buttonLink || "/about#our-beliefs");
+
+          return (
+            <div key={index}>
                <section className="relative min-h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden py-16 md:py-0">
                  {/* Background Image — only show after fetch to avoid flash of old image */}
                  <div className="absolute inset-0 relative">
@@ -322,11 +328,11 @@ export function AboutPreview() {
                        {section.title}
                      </h2>
                      
-                     <p className="text-gray-200 leading-relaxed max-w-3xl mx-auto mb-8 md:mb-12" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>
-                       {section.content.description}
-                     </p>
+                    <p className="text-gray-200 leading-relaxed max-w-3xl mx-auto mb-8 md:mb-12" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>
+                      {section.content.description}
+                    </p>
 
-                   <Link href={whatWeBelieveData.buttonLink}>
+                    <Link href={whatWeBelieveHref}>
                      <button className="w-full sm:w-auto border-2 border-white text-white px-6 md:px-8 py-3 text-xs md:text-sm font-medium uppercase tracking-wide hover:bg-white hover:text-gray-900 transition-all duration-300">
                        {whatWeBelieveData.buttonText}
                      </button>

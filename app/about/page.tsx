@@ -273,7 +273,7 @@ export default function AboutPage() {
           const ob = pageData.ourBeliefs;
           const items = (ob?.items?.length ? ob.items : (ob?.content ? [{ title: ob.title || 'Our Beliefs', content: ob.content }] : [])) as { title: string; content: string }[];
           return ob?.visible !== false && items.length > 0 && (
-          <section className="py-20 lg:py-24">
+          <section id="our-beliefs" className="py-20 lg:py-24">
             <div className="container mx-auto px-6 lg:px-8">
               <div className="text-center mb-16">
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance">{ob?.title || 'Our Beliefs'}</h2>

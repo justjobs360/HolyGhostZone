@@ -51,7 +51,7 @@ export default function HomePageEditor() {
       description: 'Our faith is grounded in the Bible and centered on Jesus Christ. We believe in the power of God\'s love to transform lives and communities.',
       backgroundImage: '/images/whoweare.jpg',
       buttonText: 'Learn More',
-      buttonLink: '/about'
+      buttonLink: '/about#our-beliefs'
     },
     newToMilton: {
       title: 'New to Milton Keynes?',
