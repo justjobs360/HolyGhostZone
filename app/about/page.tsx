@@ -68,6 +68,25 @@ export default function AboutPage() {
 
   const [pageDataReady, setPageDataReady] = useState(false)
 
+  // Ensure navigating to /about#our-beliefs scrolls to the Our Beliefs section
+  useEffect(() => {
+    if (!pageDataReady) return
+
+    const scrollToHash = () => {
+      if (typeof window === "undefined") return
+      if (window.location.hash === "#our-beliefs") {
+        const el = document.getElementById("our-beliefs")
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      }
+    }
+
+    scrollToHash()
+    window.addEventListener("hashchange", scrollToHash)
+    return () => window.removeEventListener("hashchange", scrollToHash)
+  }, [pageDataReady])
+
   useEffect(() => {
     loadPageData();
   }, []);
