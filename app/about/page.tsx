@@ -129,7 +129,7 @@ export default function AboutPage() {
               </div>
             </section>
             <section className="py-24 lg:py-48 bg-gray-800" />
-            <section className="py-20 bg-white">
+            <section id="our-beliefs" className="py-20 bg-white">
               <div className="container mx-auto px-6 lg:px-8">
                 <div className="h-96 bg-gray-100 rounded animate-pulse" />
               </div>
