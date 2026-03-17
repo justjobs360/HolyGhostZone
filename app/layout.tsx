@@ -13,14 +13,14 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Holy Ghost Zone MK - Modern Church Community",
+  title: "RCCG Holy Ghost Zone in Milton Keynes, United Kingdom",
   description:
     "Join our vibrant church community for worship, teachings, and fellowship. Experience the power of faith in a modern, welcoming environment.",
   generator: "v0.app",
   keywords: ["church", "worship", "community", "faith", "teachings", "events"],
   authors: [{ name: "Holy Ghost Zone MK" }],
   openGraph: {
-    title: "Holy Ghost Zone MK - Modern Church Community",
+    title: "RCCG Holy Ghost Zone in Milton Keynes, United Kingdom",
     description: "Join our vibrant church community for worship, teachings, and fellowship.",
     type: "website",
   },
